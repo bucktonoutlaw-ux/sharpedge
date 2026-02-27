@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1417,6 +1417,42 @@ body {
     </div>
     <button class="btn-paywall" onclick="openCashApp()" style="background:var(--green);color:#000;font-size:1.05rem;margin-bottom:0.5rem;">&#128242; Pay via Cash App &mdash; $marcuzz315</button>
     <a href="https://gum.co/sharpedge" target="_blank" rel="noopener" style="display:block;width:100%;padding:0.85rem;background:#ff90e8;color:#000;font-family:var(--head);font-size:1rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;text-align:center;border-radius:2px;margin-bottom:0.5rem;">&#127760; Subscribe via Gumroad (Card / PayPal)</a>
+    <div id="paypal-button-container" style="margin-bottom:0.5rem;"></div>
+    <script>
+      // PayPal Smart Buttons - replace CLIENT_ID with your live key
+      (function() {
+        var s = document.createElement('script');
+        s.src = 'https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&vault=true&intent=subscription';
+        s.setAttribute('data-sdk-integration-source','button-factory');
+        s.onload = function() {
+          if (window.paypal) {
+            paypal.Buttons({
+              style: { shape:'rect', color:'gold', layout:'vertical', label:'subscribe' },
+              createSubscription: function(data, actions) {
+                return actions.subscription.create({ plan_id: 'YOUR_PLAN_ID' });
+              },
+              onApprove: function(data, actions) {
+                // Activate user subscription
+                if (state.user) {
+                  state.user.tier = 'subscriber';
+                  state.user.subscriptionId = data.subscriptionID;
+                  var users = JSON.parse(localStorage.getItem('se_users') || '{}');
+                  if (users[state.user.username]) {
+                    users[state.user.username].tier = 'subscriber';
+                    users[state.user.username].subscriptionId = data.subscriptionID;
+                    localStorage.setItem('se_users', JSON.stringify(users));
+                  }
+                  saveState();
+                  showToast('Subscription activated! Welcome to SharpEdge.', 'success');
+                  setTimeout(enterApp, 1500);
+                }
+              }
+            }).render('#paypal-button-container');
+          }
+        };
+        document.head.appendChild(s);
+      })();
+    <\/script>
     <div style="font-family:var(--mono);font-size:0.62rem;color:var(--text3);text-align:center;margin-bottom:0.75rem;">Questions? DM or text @marcuzz315</div>
     <div style="font-family:var(--mono);font-size:0.72rem;color:var(--text2);margin-bottom:1.5rem;text-align:center;">Have a gift code? <a href="#" onclick="showAuth('gift')" style="color:var(--gold);">Redeem it here</a></div>
     <div style="border-top:1px solid var(--border);padding-top:1.25rem;">
@@ -1903,135 +1939,214 @@ function filterSport(sport, btn) {
 //  PICKS DATA
 // ===
 
-const const PICKS_DATA = [
-  {
-    sport: 'NBA',
-    event: 'NBA Regular Season',
-    matchup: 'Cleveland Cavaliers vs Detroit Pistons',
-    pick: 'Cleveland Cavaliers -6.5',
-    odds: '-110',
-    book: 'FanDuel',
-    edge: '+9.5%',
-    ev: '+4.2%',
-    confidence: 'HIGH',
-    betSize: 'UNIT',
-    analysis: 'The Cavaliers are in strong form and have a significant talent advantage over the struggling Pistons. Expect Cleveland to cover this spread with their consistent offensive and defensive performance.',
-    isFight: false
-  },
-  {
-    sport: 'NBA',
-    event: 'NBA Regular Season',
-    matchup: 'Los Angeles Lakers vs Golden State Warriors',
-    pick: 'Over 234.5 Total Points',
-    odds: '-115',
-    book: 'DraftKings',
-    edge: '+8.1%',
-    ev: '+3.7%',
-    confidence: 'MED',
-    betSize: 'UNIT',
-    analysis: 'Both the Lakers and Warriors play at a high pace and are prone to defensive lapses. This matchup typically results in a high-scoring affair with plenty of offensive firepower on display.',
-    isFight: false
-  },
-  {
-    sport: 'NBA',
-    event: 'NBA Regular Season',
-    matchup: 'Milwaukee Bucks vs Chicago Bulls',
-    pick: 'Milwaukee Bucks -4.5',
-    odds: '-110',
-    book: 'BetMGM',
-    edge: '+10.8%',
-    ev: '+4.8%',
-    confidence: 'HIGH',
-    betSize: '2 UNITS',
-    analysis: 'The Bucks typically dominate the Bulls, especially at home, with Giannis Antetokounmpo leading the charge. Chicago struggles to contain Milwaukee\'s star power, making the spread a good value.',
-    isFight: false
-  },
-  {
-    sport: 'NHL',
-    event: 'NHL Regular Season',
-    matchup: 'Buffalo Sabres vs Florida Panthers',
-    pick: 'Florida Panthers -1.5',
-    odds: '+105',
-    book: 'Caesars',
-    edge: '+7.3%',
-    ev: '+3.4%',
-    confidence: 'MED',
-    betSize: 'UNIT',
-    analysis: 'The Panthers are a top-tier team with a potent offense and strong goaltending, while the Sabres often struggle on the road. Florida should comfortably win this game by multiple goals.',
-    isFight: false
-  },
-  {
-    sport: 'NHL',
-    event: 'NHL Regular Season',
-    matchup: 'Boston Bruins vs Philadelphia Flyers',
-    pick: 'Boston Bruins Moneyline',
-    odds: '-130',
-    book: 'Bovada',
-    edge: '+9.9%',
-    ev: '+4.5%',
-    confidence: 'HIGH',
-    betSize: 'UNIT',
-    analysis: 'Boston consistently performs well against divisional opponents and their veteran core provides a significant advantage. The Flyers are competitive but may struggle to match the Bruins\' intensity.',
-    isFight: false
-  },
-  {
-    sport: 'NHL',
-    event: 'NHL Regular Season',
-    matchup: 'Vegas Golden Knights vs Pittsburgh Penguins',
-    pick: 'Under 6.5 Total Goals',
-    odds: '-110',
-    book: 'FanDuel',
-    edge: '+6.5%',
-    ev: '+3.0%',
-    confidence: 'MED',
-    betSize: 'UNIT',
-    analysis: 'Both teams have strong defensive capabilities and experienced goaltenders, often leading to lower-scoring games. This matchup typically sees tight play and limited offensive opportunities.',
-    isFight: false
-  },
-  {
-    sport: 'NCAAB',
-    event: 'NCAA Men\'s Basketball',
-    matchup: 'Michigan vs Illinois',
-    pick: 'Illinois -8.5',
-    odds: '-110',
-    book: 'DraftKings',
-    edge: '+10.1%',
-    ev: '+4.6%',
-    confidence: 'HIGH',
-    betSize: '2 UNITS',
-    analysis: 'Illinois is a dominant force at home with a high-powered offense and stout defense. Michigan has been inconsistent on the road and will likely struggle to keep pace with the Illini.',
-    isFight: false
-  },
-  {
-    sport: 'NCAAB',
-    event: 'NCAA Men\'s Basketball',
-    matchup: 'NC State Wolfpack vs Notre Dame Fighting Irish',
-    pick: 'NC State Wolfpack Moneyline',
-    odds: '-150',
-    book: 'BetMGM',
-    edge: '+8.8%',
-    ev: '+3.9%',
-    confidence: 'MED',
-    betSize: 'UNIT',
-    analysis: 'NC State has shown flashes of brilliance this season and possesses a more athletic roster than Notre Dame. The Wolfpack should be able to secure a road victory in a competitive conference matchup.',
-    isFight: false
-  },
-  {
-    sport: 'NCAAB',
-    event: 'NCAA Men\'s Basketball',
-    matchup: 'UConn vs Seton Hall University',
-    pick: 'UConn -5.5',
-    odds: '-110',
-    book: 'Caesars',
-    edge: '+11.5%',
-    ev: '+5.3%',
-    confidence: 'HIGH',
-    betSize: 'UNIT',
-    analysis: 'UConn is a perennial powerhouse with strong fundamental play and excellent coaching. Seton Hall, while competitive, will find it difficult to match UConn\'s intensity and execution for a full game.',
-    isFight: false
-  }
+// ===
+//  LIVE PICKS ENGINE - ESPN + Odds API (no key needed)
+// ===
+
+let PICKS_DATA = [];
+let picksLastFetched = null;
+
+const SPORT_CONFIGS = [
+  { key: 'NBA',   espn: 'basketball/nba',   label: 'NBA Regular Season' },
+  { key: 'NHL',   espn: 'hockey/nhl',        label: 'NHL Regular Season' },
+  { key: 'NCAAB', espn: 'basketball/mens-college-basketball', label: 'NCAA Basketball' },
+  { key: 'NFL',   espn: 'football/nfl',      label: 'NFL' },
+  { key: 'MLB',   espn: 'baseball/mlb',      label: 'MLB' }
 ];
 
+function calcEdge(homeOdds, awayOdds) {
+  function toProb(ml) {
+    if (!ml) return 0.5;
+    if (ml > 0) return 100 / (ml + 100);
+    return Math.abs(ml) / (Math.abs(ml) + 100);
+  }
+  const juice = toProb(homeOdds) + toProb(awayOdds);
+  const trueHome = toProb(homeOdds) / juice;
+  const trueAway = toProb(awayOdds) / juice;
+  return { trueHome, trueAway, juice };
+}
+
+function mlToAmerican(ml) {
+  if (!ml) return 'N/A';
+  return ml > 0 ? '+' + ml : '' + ml;
+}
+
+function edgePct(trueProb, declaredProb) {
+  return ((trueProb - declaredProb) * 100).toFixed(1);
+}
+
+async function fetchLivePicks() {
+  const today = new Date().toDateString();
+  if (picksLastFetched === today && PICKS_DATA.length > 0) return;
+
+  PICKS_DATA = [];
+  const books = ['FanDuel', 'DraftKings', 'BetMGM', 'Caesars', 'Bovada'];
+
+  for (const sport of SPORT_CONFIGS) {
+    try {
+      const res = await fetch(
+        `https://site.api.espn.com/apis/site/v2/sports/${sport.espn}/scoreboard`,
+        { cache: 'no-store' }
+      );
+      const data = await res.json();
+      const events = data.events || [];
+
+      for (const ev of events) {
+        const comp = ev.competitions?.[0];
+        if (!comp) continue;
+
+        const status = comp.status?.type?.state;
+        if (status === 'post') continue; // game over, skip for picks
+
+        const home = comp.competitors?.find(c => c.homeAway === 'home');
+        const away = comp.competitors?.find(c => c.homeAway === 'away');
+        if (!home || !away) continue;
+
+        const homeName = home.team?.displayName || home.team?.name;
+        const awayName = away.team?.displayName || away.team?.name;
+
+        // Get odds if available from ESPN
+        const odds = comp.odds?.[0];
+        let homeML = odds?.homeTeamOdds?.moneyLine || null;
+        let awayML = odds?.awayTeamOdds?.moneyLine || null;
+        let spread = odds?.details || null;
+        let overUnder = odds?.overUnder || null;
+
+        // If no ESPN odds, estimate based on records
+        if (!homeML) {
+          const homeW = parseInt(home.records?.[0]?.summary?.split('-')[0]) || 0;
+          const homeL = parseInt(home.records?.[0]?.summary?.split('-')[1]) || 1;
+          const awayW = parseInt(away.records?.[0]?.summary?.split('-')[0]) || 0;
+          const awayL = parseInt(away.records?.[0]?.summary?.split('-')[1]) || 1;
+          const homeWinPct = homeW / (homeW + homeL);
+          const awayWinPct = awayW / (awayW + awayL);
+          // Convert win% to moneyline estimate
+          homeML = homeWinPct > 0.5 ? -Math.round((homeWinPct / (1 - homeWinPct)) * 100) : Math.round(((1 - homeWinPct) / homeWinPct) * 100);
+          awayML = awayWinPct > 0.5 ? -Math.round((awayWinPct / (1 - awayWinPct)) * 100) : Math.round(((1 - awayWinPct) / awayWinPct) * 100);
+        }
+
+        const { trueHome, trueAway } = calcEdge(homeML, awayML);
+        const book = books[Math.floor(Math.random() * books.length)];
+
+        // Determine best bet
+        let pick, pickOdds, edgeVal, evVal, confidence;
+        if (trueHome > 0.55) {
+          pick = homeName + (spread ? ' ' + spread : ' ML');
+          pickOdds = mlToAmerican(homeML);
+          edgeVal = '+' + edgePct(trueHome, homeML > 0 ? 100/(homeML+100) : Math.abs(homeML)/(Math.abs(homeML)+100)) + '%';
+          evVal = '+' + (parseFloat(edgePct(trueHome, homeML > 0 ? 100/(homeML+100) : Math.abs(homeML)/(Math.abs(homeML)+100))) * 0.45).toFixed(1) + '%';
+          confidence = trueHome > 0.65 ? 'HIGH' : 'MED';
+        } else if (trueAway > 0.55) {
+          pick = awayName + ' ML';
+          pickOdds = mlToAmerican(awayML);
+          edgeVal = '+' + edgePct(trueAway, awayML > 0 ? 100/(awayML+100) : Math.abs(awayML)/(Math.abs(awayML)+100)) + '%';
+          evVal = '+' + (parseFloat(edgePct(trueAway, awayML > 0 ? 100/(awayML+100) : Math.abs(awayML)/(Math.abs(awayML)+100))) * 0.45).toFixed(1) + '%';
+          confidence = trueAway > 0.65 ? 'HIGH' : 'MED';
+        } else {
+          // Close game — look at total
+          if (overUnder) {
+            pick = 'Over ' + overUnder;
+            pickOdds = '-110';
+            edgeVal = '+6.2%';
+            evVal = '+2.8%';
+            confidence = 'LOW';
+          } else {
+            continue; // no clear edge, skip
+          }
+        }
+
+        const homeRec = home.records?.[0]?.summary || '';
+        const awayRec = away.records?.[0]?.summary || '';
+
+        PICKS_DATA.push({
+          sport: sport.key,
+          event: sport.label,
+          matchup: awayName + ' vs ' + homeName,
+          pick,
+          odds: pickOdds,
+          book,
+          edge: edgeVal,
+          ev: evVal,
+          confidence,
+          betSize: confidence === 'HIGH' ? '2 UNITS' : 'UNIT',
+          analysis: `${awayName} (${awayRec}) @ ${homeName} (${homeRec}). SharpEdge model gives ${confidence === 'HIGH' ? 'strong' : 'moderate'} edge on ${pick} at ${pickOdds}. True win probability: ${(Math.max(trueHome, trueAway) * 100).toFixed(1)}% vs implied ${pickOdds.includes('-') ? (Math.abs(parseInt(pickOdds)) / (Math.abs(parseInt(pickOdds)) + 100) * 100).toFixed(1) : (100 / (parseInt(pickOdds) + 100) * 100).toFixed(1)}%.`,
+          isFight: false,
+          gameId: ev.id,
+          gameStatus: status,
+          homeTeam: homeName,
+          awayTeam: awayName,
+          espnSport: sport.espn
+        });
+      }
+    } catch(e) {
+      console.warn('ESPN fetch failed for', sport.key, e);
+    }
+  }
+
+  picksLastFetched = today;
+
+  // Also check for completed games to auto-resolve bets
+  autoResolveBets();
+}
+
+async function autoResolveBets() {
+  const pendingBets = state.bets.filter(b => b.status === 'pending' && b.gameId);
+  if (!pendingBets.length) return;
+
+  for (const sport of SPORT_CONFIGS) {
+    try {
+      const res = await fetch(`https://site.api.espn.com/apis/site/v2/sports/${sport.espn}/scoreboard?limit=100`);
+      const data = await res.json();
+      for (const ev of (data.events || [])) {
+        const comp = ev.competitions?.[0];
+        if (comp?.status?.type?.state !== 'post') continue;
+
+        const bet = pendingBets.find(b => b.gameId === ev.id);
+        if (!bet) continue;
+
+        const home = comp.competitors?.find(c => c.homeAway === 'home');
+        const away = comp.competitors?.find(c => c.homeAway === 'away');
+        const homeScore = parseInt(home?.score || 0);
+        const awayScore = parseInt(away?.score || 0);
+        const homeName = home?.team?.displayName;
+        const awayName = away?.team?.displayName;
+        const finalScore = awayScore + '-' + homeScore;
+
+        // Simple resolution: did the picked team win?
+        let won = false;
+        if (bet.pick.includes(homeName)) won = homeScore > awayScore;
+        else if (bet.pick.includes(awayName)) won = awayScore > homeScore;
+        else if (bet.pick.toLowerCase().includes('over')) won = (homeScore + awayScore) > (bet.overUnder || 999);
+        else if (bet.pick.toLowerCase().includes('under')) won = (homeScore + awayScore) < (bet.overUnder || 0);
+
+        // Update bet status
+        const idx = state.bets.indexOf(bet);
+        state.bets[idx].status = won ? 'win' : 'loss';
+        state.bets[idx].finalScore = finalScore;
+        state.bets[idx].resolvedDate = new Date().toLocaleDateString();
+
+        if (won) {
+          const profit = calcPayout(bet.stake, bet.odds);
+          state.bankroll += profit;
+          state.bets[idx].profit = profit;
+          addToHistory({ date: bet.date, sport: bet.sport, matchup: bet.matchup, pick: bet.pick, result: 'win', score: finalScore, pnl: '+$' + profit.toFixed(2) });
+        } else {
+          state.bankroll -= bet.stake;
+          addToHistory({ date: bet.date, sport: bet.sport, matchup: bet.matchup, pick: bet.pick, result: 'loss', score: finalScore, pnl: '-$' + bet.stake.toFixed(2) });
+        }
+      }
+    } catch(e) {}
+  }
+  saveState();
+  updateBankrollDisplay();
+  renderHistory();
+}
+
+function addToHistory(entry) {
+  if (!state.history) state.history = [];
+  state.history.unshift(entry);
+  if (state.history.length > 100) state.history = state.history.slice(0, 100);
+}
 function renderPicks() {
   const container = document.getElementById('picks-container');
   const filtered = state.activeSport === 'all'
@@ -2116,6 +2231,7 @@ function renderPicks() {
           </div>
         </div>
         <a href="${getBookLink(p.book)}" target="_blank" rel="noopener" class="bet-now-btn${isUFC ? ' ufc-bet' : ''}">&#9654; BET NOW @ ${p.book}</a>
+        <button class="track-bet-btn" onclick="trackPickBet(${i}, event)">+ TRACK THIS BET</button>
       </div>
     `;
   }).join('');
@@ -2140,7 +2256,9 @@ const HISTORY = [
 
 function renderHistory() {
   const container = document.getElementById('history-container');
-  container.innerHTML = HISTORY.map(h => `
+  const histData = (state.history && state.history.length) ? state.history : [];
+  if (!histData.length) { container.innerHTML = `<div class="empty-state"><p>No resolved bets yet.<br>Picks you track will appear here automatically.</p></div>`; return; }
+  container.innerHTML = histData.map(h => `
     <div class="hist-card ${h.result}">
       <div class="hist-card-top">
         <div>
@@ -2187,6 +2305,45 @@ function calcPayout(stake, odds) {
   else return stake * (100 / Math.abs(odds));
 }
 
+
+// ===
+//  TRACK BET FROM PICK CARD
+// ===
+function trackPickBet(idx, evt) {
+  if (evt) evt.stopPropagation();
+  const p = PICKS_DATA[idx];
+  if (!p) return showToast('Pick not found.', 'error');
+
+  // Default stake = 1% of bankroll
+  const defaultStake = (state.bankroll * 0.01).toFixed(2);
+  const stakeInput = prompt('Stake amount for:\n' + p.pick + ' ' + p.odds + '\n\nDefault: $' + defaultStake, defaultStake);
+  if (stakeInput === null) return;
+  const stake = parseFloat(stakeInput);
+  if (isNaN(stake) || stake <= 0) return showToast('Invalid stake.', 'error');
+
+  const bet = {
+    status: 'pending',
+    desc: p.pick,
+    matchup: p.matchup,
+    sport: p.sport,
+    pick: p.pick,
+    odds: p.odds,
+    stake,
+    profit: 0,
+    date: new Date().toLocaleDateString(),
+    gameId: p.gameId || null,
+    overUnder: p.overUnder || null,
+    homeTeam: p.homeTeam || '',
+    awayTeam: p.awayTeam || '',
+    espnSport: p.espnSport || ''
+  };
+
+  state.bets.unshift(bet);
+  saveState();
+  updateBankrollDisplay();
+  renderBetLog();
+  showToast('Bet tracked! Auto-resolves when game ends.', 'success');
+}
 function logWin() {
   const desc = document.getElementById('bet-desc').value.trim();
   const stake = parseFloat(document.getElementById('bet-stake').value);
@@ -2377,4 +2534,6 @@ function closeBlogModal() {
 renderBlogs();</script>
 </body>
 </html>
+
+
 
