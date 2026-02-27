@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1418,41 +1418,7 @@ body {
     <button class="btn-paywall" onclick="openCashApp()" style="background:var(--green);color:#000;font-size:1.05rem;margin-bottom:0.5rem;">&#128242; Pay via Cash App &mdash; $marcuzz315</button>
     <a href="https://gum.co/sharpedge" target="_blank" rel="noopener" style="display:block;width:100%;padding:0.85rem;background:#ff90e8;color:#000;font-family:var(--head);font-size:1rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;text-align:center;border-radius:2px;margin-bottom:0.5rem;">&#127760; Subscribe via Gumroad (Card / PayPal)</a>
     <div id="paypal-button-container" style="margin-bottom:0.5rem;"></div>
-    <script>
-      // PayPal Smart Buttons - replace CLIENT_ID with your live key
-      (function() {
-        var s = document.createElement('script');
-        s.src = 'https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&vault=true&intent=subscription';
-        s.setAttribute('data-sdk-integration-source','button-factory');
-        s.onload = function() {
-          if (window.paypal) {
-            paypal.Buttons({
-              style: { shape:'rect', color:'gold', layout:'vertical', label:'subscribe' },
-              createSubscription: function(data, actions) {
-                return actions.subscription.create({ plan_id: 'YOUR_PLAN_ID' });
-              },
-              onApprove: function(data, actions) {
-                // Activate user subscription
-                if (state.user) {
-                  state.user.tier = 'subscriber';
-                  state.user.subscriptionId = data.subscriptionID;
-                  var users = JSON.parse(localStorage.getItem('se_users') || '{}');
-                  if (users[state.user.username]) {
-                    users[state.user.username].tier = 'subscriber';
-                    users[state.user.username].subscriptionId = data.subscriptionID;
-                    localStorage.setItem('se_users', JSON.stringify(users));
-                  }
-                  saveState();
-                  showToast('Subscription activated! Welcome to SharpEdge.', 'success');
-                  setTimeout(enterApp, 1500);
-                }
-              }
-            }).render('#paypal-button-container');
-          }
-        };
-        document.head.appendChild(s);
-      })();
-    <\/script>
+
     <div style="font-family:var(--mono);font-size:0.62rem;color:var(--text3);text-align:center;margin-bottom:0.75rem;">Questions? DM or text @marcuzz315</div>
     <div style="font-family:var(--mono);font-size:0.72rem;color:var(--text2);margin-bottom:1.5rem;text-align:center;">Have a gift code? <a href="#" onclick="showAuth('gift')" style="color:var(--gold);">Redeem it here</a></div>
     <div style="border-top:1px solid var(--border);padding-top:1.25rem;">
