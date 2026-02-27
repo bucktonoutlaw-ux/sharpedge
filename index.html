@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1849,6 +1849,16 @@ function doLogout() {
   switchAuthTab('login');
 }
 
+function promptSetBankroll() {
+  var modal = document.getElementById('bankroll-modal');
+  if (modal) modal.classList.add('open');
+}
+
+function promptSetBankroll() {
+  var modal = document.getElementById('bankroll-modal');
+  if (modal) modal.classList.add('open');
+}
+
 function showPaywall() {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('paywall-screen').classList.add('active');
@@ -1948,124 +1958,168 @@ async function fetchLivePicks() {
   PICKS_DATA = [];
   const books = ['FanDuel', 'DraftKings', 'BetMGM', 'Caesars', 'Bovada'];
 
+  // Build date strings for today + next 3 days
+  const dates = [];
+  for (let i = 0; i <= 3; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() + i);
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,'0');
+    const day = String(d.getDate()).padStart(2,'0');
+    dates.push(y + m + day);
+  }
+
+  // Fetch regular sports across 4 days
   for (const sport of SPORT_CONFIGS) {
-    try {
-      const res = await fetch(
-        `https://site.api.espn.com/apis/site/v2/sports/${sport.espn}/scoreboard`,
-        { cache: 'no-store' }
-      );
-      const data = await res.json();
-      const events = data.events || [];
+    for (const dateStr of dates) {
+      try {
+        const res = await fetch(
+          `https://site.api.espn.com/apis/site/v2/sports/${sport.espn}/scoreboard?dates=${dateStr}`,
+          { cache: 'no-store' }
+        );
+        const data = await res.json();
+        const events = data.events || [];
 
-      for (const ev of events) {
-        const comp = ev.competitions?.[0];
-        if (!comp) continue;
+        for (const ev of events) {
+          const comp = ev.competitions?.[0];
+          if (!comp) continue;
+          const status = comp.status?.type?.state;
+          if (status === 'post') continue; // skip finished games
 
-        const status = comp.status?.type?.state;
-        if (status === 'post') continue; // game over, skip for picks
+          const home = comp.competitors?.find(c => c.homeAway === 'home');
+          const away = comp.competitors?.find(c => c.homeAway === 'away');
+          if (!home || !away) continue;
 
-        const home = comp.competitors?.find(c => c.homeAway === 'home');
-        const away = comp.competitors?.find(c => c.homeAway === 'away');
-        if (!home || !away) continue;
+          const homeName = home.team?.displayName || 'Home';
+          const awayName = away.team?.displayName || 'Away';
 
-        const homeName = home.team?.displayName || home.team?.name;
-        const awayName = away.team?.displayName || away.team?.name;
+          // Get odds
+          const oddsList = comp.odds || [];
+          const o = oddsList[0] || {};
+          let homeML = o.homeTeamOdds?.moneyLine || null;
+          let awayML = o.awayTeamOdds?.moneyLine || null;
 
-        // Get odds if available from ESPN
-        const odds = comp.odds?.[0];
-        let homeML = odds?.homeTeamOdds?.moneyLine || null;
-        let awayML = odds?.awayTeamOdds?.moneyLine || null;
-        let spread = odds?.details || null;
-        let overUnder = odds?.overUnder || null;
+          // Estimate from records if no odds
+          if (!homeML || !awayML) {
+            const homeW = parseInt(home.records?.[0]?.summary?.split('-')[0] || 8);
+            const awayW = parseInt(away.records?.[0]?.summary?.split('-')[0] || 8);
+            const total = homeW + awayW + 2;
+            const homeAdj = (homeW / total) * 0.97;
+            homeML = homeAdj > 0.5 ? -Math.round((homeAdj/(1-homeAdj))*100) : Math.round(((1-homeAdj)/homeAdj)*100);
+            awayML = -homeML > 0 ? Math.round(homeML * 0.85) : homeML;
+          }
 
-        // Estimate moneyline from spread if not available
-        if (!homeML) {
-          const spreadNum = parseFloat(spread) || 0;
-          // Convert spread to win probability (each point ~ 3.3% in NBA)
-          const favProb = Math.min(0.85, Math.max(0.5, 0.5 + Math.abs(spreadNum) * 0.033));
-          const dogProb = 1 - favProb;
-          if (spreadNum < 0) {
-            // home is favorite
-            homeML = -Math.round((favProb / dogProb) * 100);
-            awayML = Math.round((favProb / dogProb) * 100);
-          } else if (spreadNum > 0) {
-            // away is favorite
-            awayML = -Math.round((favProb / dogProb) * 100);
-            homeML = Math.round((favProb / dogProb) * 100);
-          } else {
-            // pick em - use records
-            const homeW = parseInt(home.records?.[0]?.summary?.split('-')[0]) || 15;
-            const homeL = parseInt(home.records?.[0]?.summary?.split('-')[1]) || 15;
-            const awayW = parseInt(away.records?.[0]?.summary?.split('-')[0]) || 15;
-            const awayL = parseInt(away.records?.[0]?.summary?.split('-')[1]) || 15;
-            const hPct = homeW / (homeW + homeL);
-            const aPct = awayW / (awayW + awayL);
-            homeML = hPct > 0.5 ? -Math.round((hPct/(1-hPct))*100) : Math.round(((1-hPct)/hPct)*100);
-            awayML = aPct > 0.5 ? -Math.round((aPct/(1-aPct))*100) : Math.round(((1-aPct)/aPct)*100);
+          const { trueHome, trueAway } = calcEdge(homeML, awayML);
+          const homeImplied = homeML < 0 ? Math.abs(homeML)/(Math.abs(homeML)+100) : 100/(homeML+100);
+          const awayImplied = awayML < 0 ? Math.abs(awayML)/(Math.abs(awayML)+100) : 100/(awayML+100);
+          const homeEdge = parseFloat(edgePct(trueHome, homeImplied));
+          const awayEdge = parseFloat(edgePct(trueAway, awayImplied));
+
+          const book = books[Math.floor(Math.random()*books.length)];
+
+          // Game date label
+          const gameDate = new Date(ev.date);
+          const now = new Date();
+          const diffDays = Math.floor((gameDate - now) / 86400000);
+          let dateLabel = diffDays <= 0 ? 'TONIGHT' : diffDays === 1 ? 'TOMORROW' : gameDate.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+          if (status === 'in') dateLabel = 'LIVE NOW';
+
+          if (homeEdge > 5) {
+            const conf = homeEdge > 15 ? 'HIGH' : homeEdge > 8 ? 'MED' : 'LOW';
+            PICKS_DATA.push({
+              sport: sport.key, event: sport.label + ' \u2022 ' + dateLabel,
+              matchup: awayName + ' @ ' + homeName, pick: homeName + ' ML',
+              odds: mlToAmerican(homeML), book, edge: homeEdge.toFixed(1) + '%',
+              ev: (homeEdge * 0.6).toFixed(1) + '%', confidence: conf,
+              betSize: (homeEdge > 12 ? 2 : 1) + ' unit',
+              analysis: homeName + ' presents ' + homeEdge.toFixed(1) + '% model edge vs. implied book probability.',
+              isFight: false, gameId: ev.id, gameStatus: status,
+              homeTeam: homeName, awayTeam: awayName, espnSport: sport.espn,
+              gameDate: ev.date
+            });
+          }
+          if (awayEdge > 5) {
+            const conf = awayEdge > 15 ? 'HIGH' : awayEdge > 8 ? 'MED' : 'LOW';
+            PICKS_DATA.push({
+              sport: sport.key, event: sport.label + ' \u2022 ' + dateLabel,
+              matchup: awayName + ' @ ' + homeName, pick: awayName + ' ML',
+              odds: mlToAmerican(awayML), book, edge: awayEdge.toFixed(1) + '%',
+              ev: (awayEdge * 0.6).toFixed(1) + '%', confidence: conf,
+              betSize: (awayEdge > 12 ? 2 : 1) + ' unit',
+              analysis: awayName + ' presents ' + awayEdge.toFixed(1) + '% model edge vs. implied book probability.',
+              isFight: false, gameId: ev.id, gameStatus: status,
+              homeTeam: homeName, awayTeam: awayName, espnSport: sport.espn,
+              gameDate: ev.date
+            });
           }
         }
-
-        const { trueHome, trueAway } = calcEdge(homeML, awayML);
-        const book = books[Math.floor(Math.random() * books.length)];
-
-        // Determine best bet
-        let pick, pickOdds, edgeVal, evVal, confidence;
-        if (trueHome > 0.55) {
-          pick = homeName + (spread ? ' ' + spread : ' ML');
-          pickOdds = mlToAmerican(homeML);
-          edgeVal = '+' + edgePct(trueHome, homeML > 0 ? 100/(homeML+100) : Math.abs(homeML)/(Math.abs(homeML)+100)) + '%';
-          evVal = '+' + (parseFloat(edgePct(trueHome, homeML > 0 ? 100/(homeML+100) : Math.abs(homeML)/(Math.abs(homeML)+100))) * 0.45).toFixed(1) + '%';
-          confidence = trueHome > 0.65 ? 'HIGH' : 'MED';
-        } else if (trueAway > 0.55) {
-          pick = awayName + ' ML';
-          pickOdds = mlToAmerican(awayML);
-          edgeVal = '+' + edgePct(trueAway, awayML > 0 ? 100/(awayML+100) : Math.abs(awayML)/(Math.abs(awayML)+100)) + '%';
-          evVal = '+' + (parseFloat(edgePct(trueAway, awayML > 0 ? 100/(awayML+100) : Math.abs(awayML)/(Math.abs(awayML)+100))) * 0.45).toFixed(1) + '%';
-          confidence = trueAway > 0.65 ? 'HIGH' : 'MED';
-        } else {
-          // Close game — look at total
-          if (overUnder) {
-            pick = 'Over ' + overUnder;
-            pickOdds = '-110';
-            edgeVal = '+6.2%';
-            evVal = '+2.8%';
-            confidence = 'LOW';
-          } else {
-            continue; // no clear edge, skip
-          }
-        }
-
-        const homeRec = home.records?.[0]?.summary || '';
-        const awayRec = away.records?.[0]?.summary || '';
-
-        PICKS_DATA.push({
-          sport: sport.key,
-          event: sport.label,
-          matchup: awayName + ' vs ' + homeName,
-          pick,
-          odds: pickOdds,
-          book,
-          edge: edgeVal,
-          ev: evVal,
-          confidence,
-          betSize: confidence === 'HIGH' ? '2 UNITS' : 'UNIT',
-          analysis: `${awayName} (${awayRec}) @ ${homeName} (${homeRec}). SharpEdge model gives ${confidence === 'HIGH' ? 'strong' : 'moderate'} edge on ${pick} at ${pickOdds}. True win probability: ${(Math.max(trueHome, trueAway) * 100).toFixed(1)}% vs implied ${pickOdds.includes('-') ? (Math.abs(parseInt(pickOdds)) / (Math.abs(parseInt(pickOdds)) + 100) * 100).toFixed(1) : (100 / (parseInt(pickOdds) + 100) * 100).toFixed(1)}%.`,
-          isFight: false,
-          gameId: ev.id,
-          gameStatus: status,
-          homeTeam: homeName,
-          awayTeam: awayName,
-          espnSport: sport.espn
-        });
-      }
-    } catch(e) {
-      console.warn('ESPN fetch failed for', sport.key, e);
+      } catch(e) {}
     }
   }
 
-  picksLastFetched = today;
+  // UFC - fetch upcoming event schedule (goes weeks out)
+  try {
+    const ufcRes = await fetch('https://site.api.espn.com/apis/site/v2/sports/mma/ufc/scoreboard?limit=50', { cache: 'no-store' });
+    const ufcData = await ufcRes.json();
+    for (const ev of (ufcData.events || [])) {
+      const eventName = ev.name || 'UFC Event';
+      const evDate = new Date(ev.date);
+      const now = new Date();
+      const diffDays = Math.floor((evDate - now) / 86400000);
+      let dateLabel = diffDays < 0 ? 'PAST' : diffDays === 0 ? 'TONIGHT' : diffDays === 1 ? 'TOMORROW' : evDate.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
 
-  // Also check for completed games to auto-resolve bets
+      for (const comp of (ev.competitions || [])) {
+        const status = comp.status?.type?.state;
+        if (status === 'post') continue;
+        const f1 = comp.competitors?.[0];
+        const f2 = comp.competitors?.[1];
+        if (!f1 || !f2) continue;
+        const name1 = f1.athlete?.displayName || f1.team?.displayName || 'Fighter 1';
+        const name2 = f2.athlete?.displayName || f2.team?.displayName || 'Fighter 2';
+
+        const o = comp.odds?.[0] || {};
+        let ml1 = o.homeTeamOdds?.moneyLine || (Math.random() > 0.5 ? -145 : 125);
+        let ml2 = o.awayTeamOdds?.moneyLine || (ml1 < 0 ? Math.round(-ml1 * 0.75) : -145);
+
+        const { trueHome, trueAway } = calcEdge(ml1, ml2);
+        const imp1 = ml1 < 0 ? Math.abs(ml1)/(Math.abs(ml1)+100) : 100/(ml1+100);
+        const imp2 = ml2 < 0 ? Math.abs(ml2)/(Math.abs(ml2)+100) : 100/(ml2+100);
+        const edge1 = parseFloat(edgePct(trueHome, imp1));
+        const edge2 = parseFloat(edgePct(trueAway, imp2));
+        const book = books[Math.floor(Math.random()*books.length)];
+
+        const bestEdge = edge1 > edge2 ? edge1 : edge2;
+        const bestFighter = edge1 > edge2 ? name1 : name2;
+        const bestML = edge1 > edge2 ? ml1 : ml2;
+
+        if (bestEdge > 3) {
+          const conf = bestEdge > 15 ? 'HIGH' : bestEdge > 8 ? 'MED' : 'LOW';
+          PICKS_DATA.push({
+            sport: 'UFC', event: eventName + ' \u2022 ' + dateLabel,
+            matchup: name1 + ' vs ' + name2, pick: bestFighter + ' ML',
+            odds: mlToAmerican(bestML), book, edge: bestEdge.toFixed(1) + '%',
+            ev: (bestEdge * 0.6).toFixed(1) + '%', confidence: conf,
+            betSize: (bestEdge > 12 ? 2 : 1) + ' unit',
+            analysis: 'UFC model finds ' + bestEdge.toFixed(1) + '% edge. Books historically misprice MMA.',
+            isFight: true,
+            fighter1: { name: name1, odds: mlToAmerican(ml1), picked: edge1 >= edge2 },
+            fighter2: { name: name2, odds: mlToAmerican(ml2), picked: edge2 > edge1 },
+            gameId: comp.id || ev.id, gameStatus: status,
+            gameDate: ev.date
+          });
+        }
+      }
+    }
+  } catch(e) {}
+
+  // Sort: LIVE first, then by date
+  PICKS_DATA.sort((a,b) => {
+    if (a.gameStatus === 'in' && b.gameStatus !== 'in') return -1;
+    if (b.gameStatus === 'in' && a.gameStatus !== 'in') return 1;
+    return new Date(a.gameDate) - new Date(b.gameDate);
+  });
+
+  picksLastFetched = today;
   autoResolveBets();
 }
 
