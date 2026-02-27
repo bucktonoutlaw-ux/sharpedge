@@ -1,0 +1,2380 @@
+﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#080808">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="SharpEdge">
+<title>SharpEdge | AI Sports Analysis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080808;
+  --bg2: #0e0e0e;
+  --surface: #141414;
+  --border: #1e1e1e;
+  --border2: #2a2a2a;
+  --red: #e8192c;
+  --red-dim: rgba(232,25,44,0.15);
+  --gold: #f5c842;
+  --gold-dim: rgba(245,200,66,0.12);
+  --green: #00d084;
+  --green-dim: rgba(0,208,132,0.12);
+  --text: #f0f0f0;
+  --text2: #888;
+  --text3: #444;
+  --mono: 'Share Tech Mono', monospace;
+  --head: 'Barlow Condensed', sans-serif;
+  --body: 'Barlow', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===
+   SCREENS
+=== */
+.screen { display: none; }
+.screen.active { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* ===
+   AUTH SCREEN
+=== */
+#auth-screen {
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(232,25,44,0.08) 0%, transparent 70%),
+    var(--bg);
+  position: relative;
+  overflow: hidden;
+}
+
+#auth-screen::before {
+  content: 'SHARP\AEDGE';
+  white-space: pre;
+  position: absolute;
+  font-family: var(--head);
+  font-size: 28vw;
+  font-weight: 900;
+  color: rgba(255,255,255,0.015);
+  letter-spacing: -0.05em;
+  line-height: 0.85;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.auth-inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 400px;
+}
+
+.auth-logo {
+  margin-bottom: 2.5rem;
+}
+
+.auth-logo-text {
+  font-family: var(--head);
+  font-size: 3.8rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.auth-logo-text span { color: var(--red); }
+
+.auth-logo-sub {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--text2);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-top: 0.3rem;
+}
+
+.auth-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border2);
+  margin-bottom: 1.75rem;
+}
+
+.atab {
+  flex: 1;
+  padding: 0.7rem 0;
+  background: none;
+  border: none;
+  color: var(--text3);
+  font-family: var(--head);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.2s;
+}
+
+.atab.active {
+  color: var(--red);
+  border-bottom-color: var(--red);
+}
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+.field { margin-bottom: 1rem; }
+
+.field label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--text2);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+.field input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  padding: 0.9rem 1rem;
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+  border-radius: 2px;
+}
+
+.field input:focus { border-color: var(--red); }
+.field input::placeholder { color: var(--text3); }
+
+.btn-submit {
+  width: 100%;
+  padding: 1rem;
+  background: var(--red);
+  color: #fff;
+  border: none;
+  font-family: var(--head);
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: all 0.15s;
+  border-radius: 2px;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-submit::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0);
+  transition: background 0.15s;
+}
+
+.btn-submit:active::after { background: rgba(255,255,255,0.1); }
+
+.auth-err {
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--red-dim);
+  border: 1px solid rgba(232,25,44,0.3);
+  color: var(--red);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  display: none;
+  border-radius: 2px;
+}
+
+.gift-box {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  border-radius: 2px;
+}
+
+.gift-box p {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text2);
+  line-height: 1.6;
+}
+
+.gift-box strong { color: var(--gold); }
+
+/* ===
+   PAYWALL
+=== */
+#paywall-screen {
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  background: var(--bg);
+}
+
+.paywall-inner { max-width: 360px; width: 100%; }
+
+.paywall-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  display: block;
+}
+
+.paywall-title {
+  font-family: var(--head);
+  font-size: 2.8rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin-bottom: 0.75rem;
+}
+
+.paywall-sub {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--text2);
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+.paywall-price {
+  font-family: var(--head);
+  font-size: 4rem;
+  font-weight: 900;
+  color: var(--gold);
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.paywall-price-sub {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--text2);
+  letter-spacing: 0.1em;
+  margin-bottom: 1.5rem;
+}
+
+.btn-paywall {
+  width: 100%;
+  padding: 1rem;
+  background: var(--gold);
+  color: #080808;
+  border: none;
+  font-family: var(--head);
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-bottom: 0.75rem;
+  border-radius: 2px;
+}
+
+.paywall-back {
+  background: none;
+  border: none;
+  color: var(--text2);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* ===
+   APP SHELL
+=== */
+#app-screen { background: var(--bg); padding-bottom: 70px; }
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: rgba(8,8,8,0.96);
+  backdrop-filter: blur(12px);
+  z-index: 100;
+}
+
+.topbar-logo {
+  font-family: var(--head);
+  font-size: 1.6rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.topbar-logo span { color: var(--red); }
+
+.topbar-right {
+  text-align: right;
+}
+
+.topbar-user {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--text2);
+  line-height: 1.4;
+}
+
+.topbar-tier {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+}
+
+/* ===
+   BANKROLL BAR
+=== */
+.bankroll-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-bottom: 1px solid var(--border);
+}
+
+.br-cell {
+  padding: 0.9rem 0.5rem;
+  text-align: center;
+  border-right: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.br-cell:last-child { border-right: none; }
+.br-cell:active { background: var(--surface); }
+
+.br-val {
+  font-family: var(--head);
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.br-val.up { color: var(--green); }
+.br-val.down { color: var(--red); }
+.br-val.neutral { color: var(--text); }
+.br-val.gold { color: var(--gold); }
+
+.br-label {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  color: var(--text3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 0.2rem;
+}
+
+/* ===
+   SPORT FILTER
+=== */
+.sport-filter {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border);
+  scrollbar-width: none;
+  padding: 0 0.5rem;
+}
+
+.sport-filter::-webkit-scrollbar { display: none; }
+
+.sf-btn {
+  flex-shrink: 0;
+  padding: 0.7rem 0.9rem;
+  background: none;
+  border: none;
+  color: var(--text3);
+  font-family: var(--head);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.2s;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.sf-btn.active {
+  color: var(--text);
+  border-bottom-color: var(--red);
+}
+
+.sf-btn .dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--red);
+  animation: blink 1.5s ease infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* ===
+   CONTENT TABS
+=== */
+.ctab { display: none; padding-bottom: 1rem; }
+.ctab.active { display: block; }
+
+/* ===
+   SECTION HEADER
+=== */
+.sec-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 1rem 1.25rem 0.5rem;
+}
+
+.sec-title {
+  font-family: var(--head);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text3);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.sec-date {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  color: var(--text3);
+}
+
+/* ===
+   PICK CARDS
+=== */
+.picks-wrap { padding: 0 1rem; }
+
+.pick-card {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  margin-bottom: 0.65rem;
+  border-radius: 3px;
+  overflow: hidden;
+  animation: fadeUp 0.3s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.pick-card:nth-child(1) { animation-delay: 0.04s; }
+.pick-card:nth-child(2) { animation-delay: 0.08s; }
+.pick-card:nth-child(3) { animation-delay: 0.12s; }
+.pick-card:nth-child(4) { animation-delay: 0.16s; }
+.pick-card:nth-child(5) { animation-delay: 0.2s; }
+
+.pick-card.ufc-card {
+  border-color: rgba(232,25,44,0.25);
+  background: linear-gradient(135deg, #141414 0%, #160a0a 100%);
+}
+
+.pick-sport-tag {
+  padding: 0.4rem 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+
+.pick-sport-tag.ufc { background: var(--red-dim); border-bottom-color: rgba(232,25,44,0.2); }
+.pick-sport-tag.nba { background: rgba(29,66,138,0.12); }
+.pick-sport-tag.ncaab { background: rgba(245,200,66,0.06); }
+.pick-sport-tag.nhl { background: rgba(0,100,200,0.08); }
+.pick-sport-tag.nfl { background: rgba(1,51,105,0.1); }
+
+.sport-label {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.sport-label.ufc { color: var(--red); }
+.sport-label.nba { color: #4a9eff; }
+.sport-label.ncaab { color: var(--gold); }
+.sport-label.nhl { color: #60b0ff; }
+.sport-label.nfl { color: #7ab4ff; }
+
+.conf-badge {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  padding: 0.15rem 0.5rem;
+  border-radius: 2px;
+  text-transform: uppercase;
+}
+
+.conf-badge.HIGH { background: var(--green-dim); color: var(--green); border: 1px solid rgba(0,208,132,0.2); }
+.conf-badge.MED { background: var(--gold-dim); color: var(--gold); border: 1px solid rgba(245,200,66,0.2); }
+.conf-badge.LOW { background: rgba(255,255,255,0.04); color: var(--text3); border: 1px solid var(--border2); }
+
+.pick-body { padding: 0.85rem 0.9rem 0.5rem; }
+
+.pick-matchup {
+  font-family: var(--head);
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.pick-rec {
+  padding: 0.5rem 0.75rem;
+  background: rgba(0,208,132,0.06);
+  border-left: 2px solid var(--green);
+  margin-bottom: 0.75rem;
+  border-radius: 0 2px 2px 0;
+}
+
+.pick-rec-text {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--green);
+  line-height: 1.4;
+}
+
+.pick-rec.ufc-rec {
+  background: var(--red-dim);
+  border-left-color: var(--red);
+}
+
+.pick-rec.ufc-rec .pick-rec-text { color: #ff6b7a; }
+
+.pick-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--border);
+}
+
+.ps-cell {
+  padding: 0.5rem 0.4rem;
+  text-align: center;
+  border-right: 1px solid var(--border);
+}
+
+.ps-cell:last-child { border-right: none; }
+
+.ps-val {
+  font-family: var(--head);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text);
+}
+
+.ps-val.edge { color: var(--green); }
+.ps-val.odds-good { color: var(--gold); }
+
+.ps-label {
+  font-family: var(--mono);
+  font-size: 0.5rem;
+  color: var(--text3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 0.15rem;
+}
+
+/* EDGE BAR */
+.edge-bar-wrap {
+  padding: 0 0.9rem 0.75rem;
+}
+
+.edge-bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--text3);
+  margin-bottom: 0.25rem;
+}
+
+.edge-bar-track {
+  height: 3px;
+  background: var(--border2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.edge-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.edge-bar-fill.high { background: var(--green); }
+.edge-bar-fill.med { background: var(--gold); }
+.edge-bar-fill.low { background: var(--text3); }
+
+/* ===
+   FIGHT CARD (UFC SPECIAL)
+=== */
+.fight-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0;
+  position: relative;
+}
+
+.fight-vs {
+  font-family: var(--head);
+  font-size: 0.75rem;
+  font-weight: 900;
+  color: var(--red);
+  letter-spacing: 0.1em;
+  background: var(--surface);
+  padding: 0 0.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.fight-line {
+  position: absolute;
+  left: 0.9rem;
+  right: 0.9rem;
+  height: 1px;
+  background: var(--border2);
+}
+
+.fighter-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.3rem 0;
+}
+
+.fighter-name {
+  font-family: var(--head);
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.fighter-name.picked {
+  color: var(--red);
+}
+
+.fighter-odds {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--text2);
+}
+
+.fighter-odds.picked { color: var(--gold); }
+
+/* ===
+   EMPTY STATE
+=== */
+.empty-state {
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+.empty-state p {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--text3);
+  line-height: 1.7;
+}
+
+/* ===
+   HISTORY TAB
+=== */
+.hist-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.hs-cell {
+  padding: 0.9rem 0.5rem;
+  text-align: center;
+  border-right: 1px solid var(--border);
+}
+
+.hs-cell:last-child { border-right: none; }
+
+.hs-val {
+  font-family: var(--head);
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.hs-val.green { color: var(--green); }
+.hs-val.gold { color: var(--gold); }
+.hs-val.red { color: var(--red); }
+
+.hs-label {
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  color: var(--text3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 0.2rem;
+}
+
+.hist-card {
+  margin: 0 1rem 0.5rem;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.hist-card.win { border-left: 3px solid var(--green); }
+.hist-card.loss { border-left: 3px solid var(--red); }
+
+.hist-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.hist-matchup {
+  font-family: var(--head);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.hist-result {
+  font-family: var(--head);
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.hist-result.win { color: var(--green); }
+.hist-result.loss { color: var(--red); }
+
+.hist-card-bot {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0.85rem;
+}
+
+.hcb-item {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  color: var(--text3);
+}
+
+.hcb-item span { color: var(--text); display: block; }
+
+/* ===
+   BANKROLL TRACKER TAB
+=== */
+.bk-section { padding: 0 1rem 1rem; }
+
+.bk-input-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.bk-input {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  padding: 0.75rem 0.85rem;
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  outline: none;
+  border-radius: 2px;
+}
+
+.bk-input:focus { border-color: var(--red); }
+
+.bk-btn {
+  padding: 0.75rem 1.25rem;
+  background: var(--red);
+  color: #fff;
+  border: none;
+  font-family: var(--head);
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  border-radius: 2px;
+  text-transform: uppercase;
+}
+
+.bk-btn.secondary {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  color: var(--text2);
+}
+
+.bk-log {
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.bk-log-head {
+  padding: 0.6rem 0.85rem;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--text3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  display: flex;
+  justify-content: space-between;
+}
+
+.bk-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.bk-entry:last-child { border-bottom: none; }
+
+.bk-entry-desc {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text2);
+  flex: 1;
+}
+
+.bk-entry-desc strong { color: var(--text); display: block; font-size: 0.78rem; }
+
+.bk-entry-amt {
+  font-family: var(--head);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.bk-entry-amt.pos { color: var(--green); }
+.bk-entry-amt.neg { color: var(--red); }
+
+.bk-empty {
+  padding: 2rem;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--text3);
+}
+
+/* ===
+   INFO TAB
+=== */
+.info-section { padding: 0 1rem 1rem; }
+
+.info-card {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 0.65rem;
+}
+
+.info-card-head {
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--head);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text2);
+}
+
+.info-card-body {
+  padding: 0.85rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text2);
+  line-height: 1.7;
+}
+
+.info-card-body strong { color: var(--text); }
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.stat-row:last-child { border-bottom: none; }
+
+.stat-row-label {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  color: var(--text2);
+}
+
+.stat-row-val {
+  font-family: var(--head);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.logout-btn {
+  width: 100%;
+  padding: 0.9rem;
+  background: none;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  border-radius: 2px;
+  margin-top: 0.5rem;
+  transition: all 0.2s;
+}
+
+.logout-btn:hover { border-color: var(--red); color: var(--red); }
+
+/* ===
+   BOTTOM NAV
+=== */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  background: rgba(8,8,8,0.97);
+  border-top: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  z-index: 200;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.nav-btn {
+  flex: 1;
+  padding: 0.75rem 0;
+  background: none;
+  border: none;
+  color: var(--text3);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  font-family: var(--mono);
+  font-size: 0.5rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: color 0.15s;
+}
+
+.nav-btn.active { color: var(--red); }
+.nav-btn svg { width: 19px; height: 19px; stroke-width: 1.5; }
+
+/* ===
+   LOADING SKELETONS
+=== */
+.skeleton {
+  background: linear-gradient(90deg, var(--surface) 25%, var(--border) 50%, var(--surface) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 2px;
+  margin-bottom: 0.65rem;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ===
+   NOTIFICATION TOAST
+=== */
+.toast {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  padding: 0.75rem 1.25rem;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  border-radius: 3px;
+  z-index: 999;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  white-space: nowrap;
+}
+
+.toast.show { transform: translateX(-50%) translateY(0); }
+.toast.success { border-color: rgba(0,208,132,0.4); color: var(--green); }
+.toast.error { border-color: rgba(232,25,44,0.4); color: var(--red); }
+
+/* ===
+   BANKROLL MODAL
+=== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  z-index: 300;
+  display: none;
+  align-items: flex-end;
+  padding: 1rem;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal-box {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 4px;
+  padding: 1.25rem;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.modal-title {
+  font-family: var(--head);
+  font-size: 1.3rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+}
+
+.modal-close {
+  float: right;
+  background: none;
+  border: none;
+  color: var(--text2);
+  font-size: 1.2rem;
+  cursor: pointer;
+  line-height: 1;
+}
+.bet-now-btn {
+  display:block;width:calc(100% - 1.8rem);margin:0.6rem 0.9rem 0.75rem;
+  padding:0.75rem;background:var(--green);color:#080808;
+  font-family:var(--head);font-size:1rem;font-weight:800;letter-spacing:0.08em;
+  text-transform:uppercase;text-decoration:none;text-align:center;border-radius:2px;
+  transition:opacity 0.15s;
+}
+.bet-now-btn:active{opacity:0.85;}
+.bet-now-btn.ufc-bet{background:var(--red);color:#fff;}
+
+/* REVIEW CARDS */
+.review-card {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 3px;
+  padding: 0.85rem;
+  margin-bottom: 0.6rem;
+}
+.review-stars {
+  font-size: 0.75rem;
+  margin-bottom: 0.35rem;
+}
+.review-text {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text2);
+  line-height: 1.6;
+  margin-bottom: 0.4rem;
+  font-style: italic;
+}
+.review-meta {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--text3);
+  letter-spacing: 0.06em;
+}
+
+/* ARB CARDS */
+.arb-card {
+  border: 1px solid rgba(245,200,66,0.2);
+  background: var(--surface);
+  border-radius: 3px;
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+}
+.arb-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.85rem 0.9rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+.arb-profit-badge {
+  font-family: var(--head);
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--gold);
+  line-height: 1;
+}
+.arb-leg {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.9rem;
+  border-bottom: 1px solid var(--border);
+}
+.arb-leg:last-of-type { border-bottom: none; }
+.arb-leg-team {
+  font-family: var(--head);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.arb-leg-stake {
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  color: var(--text3);
+  margin-top: 0.15rem;
+}
+.arb-leg-right {
+  text-align: right;
+}
+.arb-odds-tag {
+  font-family: var(--head);
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--gold);
+}
+.arb-book-tag {
+  font-family: var(--mono);
+  font-size: 0.58rem;
+  color: var(--text3);
+  margin-top: 0.1rem;
+}
+.arb-bet-row {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.65rem 0.9rem;
+  background: rgba(245,200,66,0.04);
+  border-top: 1px solid rgba(245,200,66,0.1);
+}
+.arb-bet-btn {
+  flex: 1;
+  padding: 0.65rem 0.5rem;
+  background: var(--gold);
+  color: #080808;
+  font-family: var(--head);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  text-align: center;
+  border-radius: 2px;
+  display: block;
+}
+
+/* ===== RESOURCES TAB ===== */
+.blog-grid{display:grid;grid-template-columns:1fr;gap:1rem;padding:1rem 0;}
+.blog-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.25rem 1.25rem 1.5rem;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;}
+.blog-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--red),var(--gold));}
+.blog-card:hover{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 6px 24px rgba(212,175,55,0.18);}
+.blog-card-num{font-family:var(--mono);font-size:0.6rem;color:var(--red);letter-spacing:2px;text-transform:uppercase;margin-bottom:0.4rem;}
+.blog-card-title{font-size:1rem;font-weight:700;color:var(--text1);margin-bottom:0.5rem;line-height:1.3;}
+.blog-card-excerpt{font-size:0.78rem;color:var(--text3);line-height:1.5;margin-right:1.5rem;}
+.blog-card-arrow{position:absolute;right:1rem;top:50%;transform:translateY(-50%);color:var(--gold);font-size:1.1rem;opacity:0.7;}
+
+/* ===== BLOG MODAL ===== */
+#blog-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.96);z-index:9000;flex-direction:column;}
+#blog-modal.open{display:flex;}
+.blog-modal-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0;box-shadow:0 2px 20px rgba(255,59,48,0.15);}
+.blog-modal-label{font-size:0.65rem;font-family:var(--mono);color:var(--gold);letter-spacing:2px;text-transform:uppercase;}
+.blog-modal-close{background:rgba(255,59,48,0.15);border:1px solid var(--red);color:var(--red);border-radius:8px;padding:0.4rem 0.9rem;font-size:0.8rem;cursor:pointer;font-family:var(--mono);letter-spacing:1px;transition:all 0.2s;}
+.blog-modal-close:hover{background:var(--red);color:#fff;}
+.blog-modal-body{flex:1;overflow-y:auto;padding:1.5rem 1.25rem 4rem;-webkit-overflow-scrolling:touch;}
+.blog-modal-body h1{font-size:1.35rem;font-weight:800;color:var(--text1);line-height:1.3;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:2px solid var(--gold);}
+.blog-modal-body h3{font-size:0.95rem;font-weight:700;color:var(--gold);margin:1.5rem 0 0.5rem;text-transform:uppercase;letter-spacing:0.5px;}
+.blog-modal-body p{font-size:0.85rem;color:var(--text2);line-height:1.75;margin-bottom:0.75rem;}
+.blog-modal-body strong{color:var(--text1);}
+.blog-modal-body ul,.blog-modal-body ol{padding-left:1.25rem;margin-bottom:0.75rem;}
+.blog-modal-body li{font-size:0.83rem;color:var(--text2);line-height:1.65;margin-bottom:0.4rem;}
+.blog-modal-cta{margin-top:2rem;padding:1rem;background:linear-gradient(135deg,rgba(212,175,55,0.12),rgba(255,59,48,0.08));border:1px solid var(--gold);border-radius:12px;text-align:center;font-size:0.85rem;color:var(--gold);font-weight:700;line-height:1.5;}
+.bh1{font-size:1.35rem;font-weight:800;color:var(--text1);line-height:1.3;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:2px solid var(--gold);}
+.bh2{font-size:1.05rem;font-weight:700;color:var(--red);margin:1.5rem 0 0.5rem;border-bottom:1px solid rgba(255,59,48,0.3);padding-bottom:0.25rem;}
+.bh3{font-size:0.9rem;font-weight:700;color:var(--gold);margin:1.2rem 0 0.4rem;text-transform:uppercase;letter-spacing:0.5px;}
+.bgold{color:var(--gold);}
+.btext2{color:var(--text2);}
+.bhr{border:none;border-top:1px solid var(--border);margin:1rem 0;}
+.bli{font-size:0.83rem;color:var(--text2);line-height:1.65;margin-bottom:0.4rem;}
+.bul{list-style:none;padding-left:1rem;margin:0.5rem 0;}
+.bul .bli::before{content:'→ ';color:var(--gold);}
+.bp{font-size:0.85rem;color:var(--text2);line-height:1.75;margin-bottom:0.75rem;}
+/* RESOURCES */
+.blog-card{border:1px solid var(--border);background:var(--surface);border-radius:4px;margin-bottom:0.65rem;overflow:hidden;cursor:pointer;transition:border-color 0.2s;animation:fadeUp 0.3s ease both;}
+.blog-card:active{border-color:var(--red);}
+.blog-card-top{height:3px;}
+.blog-card-top.red{background:linear-gradient(90deg,var(--red),transparent);}
+.blog-card-top.gold{background:linear-gradient(90deg,var(--gold),transparent);}
+.blog-card-top.green{background:linear-gradient(90deg,var(--green),transparent);}
+.blog-card-inner{padding:0.85rem 0.9rem 0.75rem;}
+.blog-card-tag{font-family:var(--mono);font-size:0.58rem;color:var(--text3);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.3rem;}
+.blog-card-title{font-family:var(--head);font-size:1.05rem;font-weight:800;text-transform:uppercase;line-height:1.15;color:var(--text);}
+.blog-card-desc{font-family:var(--mono);font-size:0.67rem;color:var(--text3);line-height:1.5;margin-top:0.35rem;}
+.blog-card-foot{display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0.9rem;border-top:1px solid var(--border);}
+.blog-card-meta{font-family:var(--mono);font-size:0.58rem;color:var(--text3);}
+.blog-card-arrow{font-family:var(--head);font-size:0.9rem;font-weight:800;color:var(--red);}
+/* ARB CARDS */
+.arb-card{border:1px solid rgba(245,200,66,0.18);background:linear-gradient(135deg,#0d0900,#0a0a0a);border-radius:4px;margin-bottom:0.75rem;overflow:hidden;animation:fadeUp 0.3s ease both;}
+.arb-header{display:flex;justify-content:space-between;align-items:flex-start;padding:0.85rem 0.9rem;border-bottom:1px solid rgba(245,200,66,0.1);}
+.arb-profit-badge{font-family:var(--head);font-size:1.4rem;font-weight:900;color:var(--gold);}
+.arb-leg{display:flex;justify-content:space-between;align-items:center;padding:0.65rem 0.9rem;border-bottom:1px solid var(--border);}
+.arb-leg-left .arb-leg-team{font-family:var(--head);font-size:0.9rem;font-weight:800;text-transform:uppercase;}
+.arb-leg-left .arb-leg-stake{font-family:var(--mono);font-size:0.6rem;color:var(--text3);margin-top:0.1rem;}
+.arb-leg-right{text-align:right;}
+.arb-odds-tag{font-family:var(--head);font-size:1rem;font-weight:800;color:var(--gold);}
+.arb-book-tag{font-family:var(--mono);font-size:0.58rem;color:var(--text3);}
+.arb-bet-row{display:flex;}
+.arb-bet-btn{flex:1;display:block;padding:0.7rem 0.4rem;background:none;border:none;border-right:1px solid var(--border);color:var(--gold);font-family:var(--head);font-size:0.72rem;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;text-decoration:none;text-align:center;cursor:pointer;}
+.arb-bet-btn:last-child{border-right:none;}
+/* REVIEW CARDS */
+.review-card{border:1px solid var(--border);background:var(--surface);border-radius:3px;padding:0.85rem;margin-bottom:0.5rem;}
+.review-stars{font-size:0.7rem;margin-bottom:0.35rem;}
+.review-text{font-family:var(--mono);font-size:0.7rem;color:var(--text2);line-height:1.6;margin-bottom:0.35rem;}
+.review-meta{font-family:var(--mono);font-size:0.58rem;color:var(--text3);}
+/* BLOG MODAL */
+.blog-modal{position:fixed;inset:0;background:var(--bg);z-index:500;display:none;flex-direction:column;}
+.blog-modal.open{display:flex;}
+.blog-modal-bar{display:flex;align-items:center;justify-content:space-between;padding:0.9rem 1.25rem;border-bottom:1px solid var(--border);background:rgba(8,8,8,0.98);backdrop-filter:blur(12px);flex-shrink:0;}
+.blog-modal-close{background:none;border:1px solid var(--border2);color:var(--text2);padding:0.4rem 0.85rem;font-family:var(--head);font-size:0.8rem;font-weight:700;letter-spacing:0.1em;cursor:pointer;border-radius:2px;}
+.blog-modal-tag{font-family:var(--mono);font-size:0.6rem;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;}
+.blog-modal-body{flex:1;overflow-y:auto;padding:1.5rem 1.25rem 3rem;-webkit-overflow-scrolling:touch;}
+.ba-tag{font-family:var(--mono);font-size:0.6rem;color:var(--red);letter-spacing:0.15em;text-transform:uppercase;margin-bottom:0.4rem;}
+.ba-title{font-family:var(--head);font-size:1.9rem;font-weight:900;line-height:1.05;text-transform:uppercase;margin-bottom:0.6rem;}
+.ba-meta{font-family:var(--mono);font-size:0.6rem;color:var(--text3);margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border);}
+.ba-body h2{font-family:var(--head);font-size:1rem;font-weight:800;text-transform:uppercase;color:var(--text);margin:1.25rem 0 0.4rem;border-left:2px solid var(--red);padding-left:0.6rem;}
+.ba-body p{font-family:var(--body);font-size:0.87rem;color:var(--text2);line-height:1.8;margin-bottom:0.8rem;}
+.ba-body strong{color:var(--text);}
+.ba-callout{border-left:3px solid var(--gold);background:rgba(245,200,66,0.04);padding:0.8rem 1rem;margin:0.9rem 0;border-radius:0 3px 3px 0;}
+.ba-callout p{font-family:var(--mono);font-size:0.73rem;color:var(--gold);margin:0;line-height:1.55;}
+.ba-cta{margin-top:1.75rem;padding:1.25rem;border:1px solid rgba(232,25,44,0.3);background:rgba(232,25,44,0.05);border-radius:4px;text-align:center;}
+.ba-cta-title{font-family:var(--head);font-size:1.25rem;font-weight:900;text-transform:uppercase;margin-bottom:0.35rem;}
+.ba-cta-sub{font-family:var(--mono);font-size:0.68rem;color:var(--text3);margin-bottom:0.9rem;}
+.ba-cta-btn{display:inline-block;padding:0.8rem 1.75rem;background:var(--red);color:#fff;font-family:var(--head);font-size:1rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;border:none;cursor:pointer;border-radius:2px;text-decoration:none;}
+</style>
+</head>
+<body>
+
+<!-- ===
+     AUTH SCREEN
+=== -->
+<div id="auth-screen" class="screen active">
+  <div class="auth-inner">
+    <div class="auth-logo">
+      <div class="auth-logo-text">Sharp<span>Edge</span></div>
+      <div class="auth-logo-sub">Cheaper. Better. Real Results.</div>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="atab active" onclick="switchAuthTab('login')">Sign In</button>
+      <button class="atab" onclick="switchAuthTab('register')">Create Account</button>
+      <button class="atab" onclick="switchAuthTab('gift')">Gift Code</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="tab-login" class="tab-panel active">
+      <div class="field">
+        <label>Username</label>
+        <input type="text" id="login-user" placeholder="your username" autocomplete="username">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="login-pass" placeholder="password" autocomplete="current-password">
+      </div>
+      <button class="btn-submit" onclick="doLogin()">Enter</button>
+      <div class="auth-err" id="login-err"></div>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="tab-register" class="tab-panel">
+      <div class="field">
+        <label>Username</label>
+        <input type="text" id="reg-user" placeholder="choose a username" autocomplete="username">
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="reg-email" placeholder="your@email.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="reg-pass" placeholder="create password" autocomplete="new-password">
+      </div>
+      <button class="btn-submit" onclick="doRegister()">Create Account</button>
+      <div class="auth-err" id="reg-err"></div>
+      <div class="gift-box" style="margin-top:1rem">
+        <p>Don't have a code? Standard accounts require a <strong>$9.99/month</strong> subscription after signup. Have a gift code? Use the <strong>Gift Code</strong> tab for free lifetime access.</p>
+      </div>
+    </div>
+
+    <!-- GIFT CODE -->
+    <div id="tab-gift" class="tab-panel">
+      <div class="field">
+        <label>Your Name (for account)</label>
+        <input type="text" id="gift-name" placeholder="e.g. Papa" autocomplete="name">
+      </div>
+      <div class="field">
+        <label>Gift Code</label>
+        <input type="text" id="gift-code" placeholder="Enter your code" autocomplete="off" style="text-transform:uppercase" oninput="this.value=this.value.toUpperCase()">
+      </div>
+      <div class="field">
+        <label>Set Password</label>
+        <input type="password" id="gift-pass" placeholder="create your password">
+      </div>
+      <button class="btn-submit" onclick="doGiftCode()">Redeem &amp; Enter</button>
+      <div class="auth-err" id="gift-err"></div>
+      <div class="gift-box">
+        <p>Gift codes give you <strong>lifetime free access</strong> €” no subscription ever.<br>Codes are single-use. If you share your code, the recipient will need to pay.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===
+     PAYWALL SCREEN
+=== -->
+<div id="paywall-screen" class="screen" style="overflow-y:auto;">
+  <div class="paywall-inner" style="padding:2rem 1.5rem 3rem;max-width:420px;">
+    <span class="paywall-icon">&#128274;</span>
+    <div class="paywall-title">Members Only</div>
+    <p class="paywall-sub">SharpEdge scans 6+ books in real-time. AI finds mispriced lines before books adjust. HIGH-confidence picks only. Real edge. Real results.</p>
+    <div style="display:flex;border:1px solid var(--border2);border-radius:3px;margin-bottom:1.25rem;overflow:hidden;">
+      <button id="plan-btn-monthly" onclick="selectPlan('monthly')" style="flex:1;padding:0.65rem 0;background:var(--red);color:#fff;border:none;font-family:var(--head);font-size:0.9rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;">MONTHLY</button>
+      <button id="plan-btn-yearly" onclick="selectPlan('yearly')" style="flex:1;padding:0.65rem 0;background:var(--surface);color:var(--text2);border:none;font-family:var(--head);font-size:0.9rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;">YEARLY <span style="font-size:0.55rem;color:var(--gold);">SAVE 17%</span></button>
+    </div>
+    <div id="price-monthly-display">
+      <div class="paywall-price">$14.99</div>
+      <div class="paywall-price-sub">PER MONTH &mdash; CANCEL ANYTIME</div>
+    </div>
+    <div id="price-yearly-display" style="display:none;">
+      <div class="paywall-price">$149</div>
+      <div class="paywall-price-sub">PER YEAR &mdash; BEST VALUE ($12.42/MO)</div>
+    </div>
+    <div style="border:1px solid rgba(0,208,132,0.3);background:rgba(0,208,132,0.06);border-radius:3px;padding:1rem;margin:1rem 0;text-align:left;">
+      <div style="font-family:var(--head);font-size:0.8rem;font-weight:800;letter-spacing:0.1em;color:var(--green);margin-bottom:0.65rem;text-transform:uppercase;">&#128184; How to Subscribe</div>
+      <div style="font-family:var(--mono);font-size:0.7rem;color:var(--text2);line-height:2;">
+        <div><strong style="color:var(--text);">1.</strong> Send <span id="cashapp-amount" style="color:var(--gold);font-weight:700;">$14.99</span> on Cash App to <strong style="color:var(--green);">$marcuzz315</strong></div>
+        <div><strong style="color:var(--text);">2.</strong> In note, type your <strong style="color:var(--gold);">username</strong> from the login screen</div>
+        <div><strong style="color:var(--text);">3.</strong> Access activated within <strong style="color:var(--gold);">1-2 hours</strong> &mdash; guaranteed</div>
+      </div>
+    </div>
+    <button class="btn-paywall" onclick="openCashApp()" style="background:var(--green);color:#000;font-size:1.05rem;margin-bottom:0.5rem;">&#128242; Pay via Cash App &mdash; $marcuzz315</button>
+    <a href="https://gum.co/sharpedge" target="_blank" rel="noopener" style="display:block;width:100%;padding:0.85rem;background:#ff90e8;color:#000;font-family:var(--head);font-size:1rem;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;text-align:center;border-radius:2px;margin-bottom:0.5rem;">&#127760; Subscribe via Gumroad (Card / PayPal)</a>
+    <div style="font-family:var(--mono);font-size:0.62rem;color:var(--text3);text-align:center;margin-bottom:0.75rem;">Questions? DM or text @marcuzz315</div>
+    <div style="font-family:var(--mono);font-size:0.72rem;color:var(--text2);margin-bottom:1.5rem;text-align:center;">Have a gift code? <a href="#" onclick="showAuth('gift')" style="color:var(--gold);">Redeem it here</a></div>
+    <div style="border-top:1px solid var(--border);padding-top:1.25rem;">
+      <div style="font-family:var(--head);font-size:0.7rem;font-weight:700;letter-spacing:0.14em;color:var(--text3);text-transform:uppercase;margin-bottom:0.85rem;">&#11088; Member Reviews</div>
+      <div id="paywall-reviews"></div>
+    </div>
+    <button class="paywall-back" onclick="showAuth('login')" style="margin-top:1.25rem;">&#8592; Back to login</button>
+  </div>
+</div>
+
+<!-- ===
+     APP SCREEN
+=== -->
+<div id="app-screen" class="screen">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-logo">Sharp<span>Edge</span></div>
+    <div class="topbar-right">
+      <div class="topbar-user" id="topbar-username">Loading...</div>
+      <div class="topbar-tier" id="topbar-tier">⭐ FOUNDING MEMBER</div>
+    </div>
+  </div>
+
+  <!-- BANKROLL BAR -->
+  <div class="bankroll-bar" onclick="openBankrollModal()">
+    <div class="br-cell">
+      <div class="br-val gold" id="br-balance">$100</div>
+      <div class="br-label">Bankroll</div>
+    </div>
+    <div class="br-cell">
+      <div class="br-val up" id="br-pnl">+$0</div>
+      <div class="br-label">All-Time P&L</div>
+    </div>
+    <div class="br-cell">
+      <div class="br-val neutral" id="br-record">0-0</div>
+      <div class="br-label">W-L Record</div>
+    </div>
+    <div class="br-cell">
+      <div class="br-val up" id="br-roi">0%</div>
+      <div class="br-label">ROI</div>
+    </div>
+  </div>
+
+  <!-- SPORT FILTER -->
+  <div class="sport-filter">
+    <button class="sf-btn active" onclick="filterSport('all', this)">All <span class="dot"></span></button>
+    <button class="sf-btn" onclick="filterSport('NBA', this)">🏀 NBA</button>
+    <button class="sf-btn" onclick="filterSport('NHL', this)">🏒 NHL</button>
+    <button class="sf-btn" onclick="filterSport('NCAAB', this)">🎓 NCAAB</button>
+  </div>
+
+  <!-- PICKS TAB -->
+  <div id="ctab-picks" class="ctab active">
+    <div class="sec-head">
+      <span class="sec-title">Today's Picks</span>
+      <span class="sec-date" id="today-date"></span>
+    </div>
+    <div class="picks-wrap" id="picks-container">
+      <div class="skeleton" style="height:130px"></div>
+      <div class="skeleton" style="height:130px"></div>
+      <div class="skeleton" style="height:130px"></div>
+    </div>
+  </div>
+
+
+  <!-- ARBS TAB -->
+  <div id="ctab-arbs" class="ctab">
+    <div class="sec-head">
+      <span class="sec-title">Arbitrage Finder</span>
+      <span class="sec-date">Guaranteed Profit</span>
+    </div>
+    <div style="margin:0 1rem 0.75rem;padding:0.9rem;border:1px solid rgba(245,200,66,0.15);border-radius:3px;background:rgba(245,200,66,0.04);">
+      <p style="font-family:var(--mono);font-size:0.68rem;color:var(--text3);line-height:1.7;"><strong style="color:var(--gold);">Arbitrage = guaranteed profit</strong> regardless of outcome. Both sides, different books. Lock in <strong style="color:var(--gold);">23-65% returns</strong>. Act fast - lines close.</p>
+    </div>
+    <div style="padding:0 1rem;" id="arbs-container"></div>
+  </div>
+
+  <!-- HISTORY TAB -->
+  <div id="ctab-history" class="ctab">
+    <div class="sec-head">
+      <span class="sec-title">7-Day Results</span>
+      <span class="sec-date">Feb 15€“21, 2026</span>
+    </div>
+    <div class="hist-summary">
+      <div class="hs-cell">
+        <div class="hs-val green">70%</div>
+        <div class="hs-label">Win Rate</div>
+      </div>
+      <div class="hs-cell">
+        <div class="hs-val gold">7€“3</div>
+        <div class="hs-label">Record</div>
+      </div>
+      <div class="hs-cell">
+        <div class="hs-val green">+80%</div>
+        <div class="hs-label">ROI</div>
+      </div>
+    </div>
+    <div id="history-container"></div>
+  </div>
+
+  <!-- BANKROLL TAB -->
+  <div id="ctab-bankroll" class="ctab">
+    <div class="sec-head">
+      <span class="sec-title">Bankroll Tracker</span>
+    </div>
+    <div class="bk-section">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:1rem">
+        <div style="border:1px solid var(--border);border-radius:3px;padding:0.9rem;text-align:center">
+          <div id="bk-current" style="font-family:var(--head);font-size:1.8rem;font-weight:800;color:var(--gold)">$100</div>
+          <div style="font-family:var(--mono);font-size:0.55rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-top:0.2rem">Current Balance</div>
+        </div>
+        <div style="border:1px solid var(--border);border-radius:3px;padding:0.9rem;text-align:center">
+          <div id="bk-start" style="font-family:var(--head);font-size:1.8rem;font-weight:800;color:var(--text2)">$100</div>
+          <div style="font-family:var(--mono);font-size:0.55rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-top:0.2rem">Starting Bankroll</div>
+        </div>
+      </div>
+      <div style="margin-bottom:0.65rem;font-family:var(--mono);font-size:0.65rem;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase">Log a Bet Result</div>
+      <div class="bk-input-row">
+        <input class="bk-input" id="bet-desc" placeholder="e.g. Dayton -190 vs Davidson" style="flex:2">
+      </div>
+      <div class="bk-input-row">
+        <input class="bk-input" id="bet-stake" type="number" placeholder="Stake $" style="flex:1">
+        <input class="bk-input" id="bet-odds" type="text" placeholder="Odds e.g. -190" style="flex:1">
+        <button class="bk-btn" onclick="logWin()">WIN</button>
+        <button class="bk-btn secondary" onclick="logLoss()">LOSS</button>
+      </div>
+      <div class="bk-log">
+        <div class="bk-log-head">
+          <span>Bet Log</span>
+          <span id="bk-entry-count">0 entries</span>
+        </div>
+        <div id="bk-log-entries">
+          <div class="bk-empty">No bets logged yet. Start tracking your results.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INFO TAB -->
+  <div id="ctab-info" class="ctab">
+    <div class="sec-head">
+      <span class="sec-title">About SharpEdge</span>
+    </div>
+    <div class="info-section">
+      <div class="info-card">
+        <div class="info-card-head">&#x1F50D;  How It Works</div>
+        <div class="info-card-body">
+          SharpEdge scans live odds from <strong>6+ sportsbooks</strong> simultaneously using AI models including Elo ratings, Poisson distribution, and sharp money detection.<br><br>
+          When the model finds a line that's mispriced €” meaning a team has a higher chance of winning than the odds suggest €” it flags it as a <strong>value bet</strong>. We only surface HIGH confidence picks.<br><br>
+          <strong>This doesn't guarantee wins.</strong> It gives you a mathematical edge over time.
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-head">&#x1F94A;  UFC Edge System</div>
+        <div class="info-card-body">
+          For UFC, the model weights: <strong>recent form, finish rate, reach/size, stylistic matchup, and sharp money movement</strong>. Fight lines move a lot €” we scan them daily and flag when books misprice fighters.<br><br>
+          UFC is our highest-edge sport. Books struggle more to price MMA than team sports.
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-head">&#x1F4B0;  Bankroll Method</div>
+        <div class="info-card-body">
+          <strong>Split your nightly bankroll evenly</strong> across that night's HIGH picks. Bank profits separately €” don't let it all ride. This protects you from variance killing a hot streak.<br><br>
+          Example: $100 bankroll, 3 picks tonight &rarr; $33.33 each. You win 2, lose 1 €” profits go in the bank, $100 base stays in play for tomorrow.
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-head">&#x1F4CA;  7-Day Backtest Results</div>
+        <div class="info-card-body">
+          <div class="stat-row">
+            <span class="stat-row-label">Starting Bankroll</span>
+            <span class="stat-row-val">$100</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-row-label">Ending Balance</span>
+            <span class="stat-row-val" style="color:var(--green)">$180.08</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-row-label">Win Rate</span>
+            <span class="stat-row-val" style="color:var(--green)">70% (7-3)</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-row-label">Best Pick</span>
+            <span class="stat-row-val" style="color:var(--gold)">Georgia +245 &#x2713;</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-row-label">Method</span>
+            <span class="stat-row-val">Bank Profits</span>
+          </div>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-head">&#x2696;&#xFE0F; Disclaimer</div>
+        <div class="info-card-body">
+          SharpEdge identifies statistical value €” it does <strong>not guarantee wins</strong>. Sports betting involves risk. Never bet more than you can afford to lose. Check your local laws. This tool is for informational and entertainment purposes. Past performance does not guarantee future results.
+        </div>
+      </div>
+      <div id="account-info-card" class="info-card">
+        <div class="info-card-head">&#x1F464;  Your Account</div>
+        <div class="info-card-body">
+          <div class="stat-row">
+            <span class="stat-row-label">Username</span>
+            <span class="stat-row-val" id="info-username">€”</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-row-label">Access Type</span>
+            <span class="stat-row-val" id="info-tier" style="color:var(--gold)">€”</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-row-label">Member Since</span>
+            <span class="stat-row-val" id="info-since">€”</span>
+          </div>
+        </div>
+      </div>
+      <!-- Private: First testers: Papa + brothers — private feedback builds empire -->
+      <div style="font-family:var(--head);font-size:0.7rem;font-weight:700;letter-spacing:0.14em;color:var(--text3);text-transform:uppercase;margin:1.25rem 0 0.75rem;">&#11088; Member Reviews</div>
+      <div id="info-reviews"></div>
+      <button class="logout-btn" onclick="doLogout()">Sign Out</button>
+    </div>
+  </div>
+
+<!-- BLOG MODAL -->
+
+  <div id="ctab-resources" class="ctab">
+  <div class="sec-head">
+    <span class="sec-title">📚 SharpEdge Playbook</span>
+  </div>
+  <p style="font-size:0.8rem;color:var(--text3);margin-bottom:1rem;line-height:1.5;">Pro-level betting knowledge. Free for members. Read, learn, dominate.</p>
+  <div class="blog-grid" id="blog-grid-container"></div>
+  <div style="text-align:center;margin-top:1.5rem;padding:0.75rem;background:rgba(212,175,55,0.05);border:1px solid rgba(212,175,55,0.15);border-radius:10px;">
+    <div style="font-size:0.7rem;font-family:var(--mono);color:var(--text3);letter-spacing:1px;">POWERED BY SAVAGE AI PIPELINE</div>
+    <div style="font-size:0.65rem;color:var(--text3);margin-top:0.3rem;opacity:0.6;">Claude + Gemini CLI + MCP + Docker + n8n</div>
+  </div>
+</div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <button class="nav-btn active" id="nav-picks" onclick="switchTab('picks')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+      Picks
+    </button>
+    <button class="nav-btn" id="nav-arbs" onclick="switchTab('arbs')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      Arbs
+    </button>
+    <button class="nav-btn" id="nav-history" onclick="switchTab('history')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      History
+    </button>
+    <button class="nav-btn" id="nav-bankroll" onclick="switchTab('bankroll')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      Bankroll
+    </button>
+    <button class="nav-btn" id="nav-info" onclick="switchTab('info')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+      Account
+    </button>
+    <button class="nav-btn" id="nav-resources" onclick="switchTab('resources')" style="color:var(--gold)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+      Learn
+    </button>
+  </div>
+
+</div>
+
+<div id="blog-modal">
+  <div class="blog-modal-header">
+    <span class="blog-modal-label">⚡ SharpEdge Playbook</span>
+    <button class="blog-modal-close" onclick="closeBlogModal()">✕ CLOSE</button>
+  </div>
+  <div class="blog-modal-boid="blog-modal-content"></div>
+</div>
+<!-- BANKROLL MODAL -->
+<div class="modal-overlay" id="bankroll-modal" onclick="closeBankrollModal(event)">
+  <div class="modal-box">
+    <button class="modal-close" onclick="document.getElementById('bankroll-modal').classList.remove('open')">&#x2713;•</button>
+    <div class="modal-title">Set Bankroll</div>
+    <div class="field">
+      <label>Starting / Current Bankroll ($)</label>
+      <input class="bk-input" id="modal-bankroll-input" type="number" placeholder="e.g. 100" style="width:100%">
+    </div>
+    <button class="bk-btn" style="width:100%" onclick="saveBankroll()">Save</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ===
+//  DATA & STATE
+// ===
+
+const GIFT_CODES = {
+  'PAPA': { name: 'Papa', used: false },
+  'MATT': { name: 'Matt', used: false },
+  'STEVEN': { name: 'Steven', used: false },
+  'PRESIDENT': { name: 'Marcus', used: false },
+  'BRO1': { name: 'Steven', used: false },
+  'BRO2': { name: 'Matt', used: false }
+};
+
+let state = {
+  user: null,
+  bankroll: 100,
+  startBankroll: 100,
+  bets: [],
+  activeSport: 'all'
+};
+
+// Load from localStorage
+function loadState() {
+  try {
+    const saved = localStorage.getItem('se_state');
+    if (saved) Object.assign(state, JSON.parse(saved));
+    const codes = localStorage.getItem('se_codes');
+    if (codes) Object.assign(GIFT_CODES, JSON.parse(codes));
+  } catch(e) {}
+}
+
+function saveState() {
+  localStorage.setItem('se_state', JSON.stringify(state));
+  localStorage.setItem('se_codes', JSON.stringify(GIFT_CODES));
+}
+
+// ===
+//  AUTH
+// ===
+
+function switchAuthTab(tab) {
+  document.querySelectorAll('.atab').forEach((t, i) => {
+    t.classList.toggle('active', ['login','register','gift'][i] === tab);
+  });
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+
+function showAuth(tab) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('auth-screen').classList.add('active');
+  switchAuthTab(tab);
+}
+
+function showError(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 4000);
+}
+
+function doLogin() {
+  const user = document.getElementById('login-user').value.trim();
+  const pass = document.getElementById('login-pass').value;
+  if (!user || !pass) return showError('login-err', 'Enter username and password.');
+
+  const users = JSON.parse(localStorage.getItem('se_users') || '{}');
+  if (!users[user]) return showError('login-err', 'Username not found.');
+  if (users[user].password !== btoa(pass)) return showError('login-err', 'Incorrect password.');
+
+  state.user = { username: user, ...users[user] };
+  saveState();
+  enterApp();
+}
+
+function doRegister() {
+  const user = document.getElementById('reg-user').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const pass = document.getElementById('reg-pass').value;
+  if (!user || !email || !pass) return showError('reg-err', 'Fill in all fields.');
+  if (pass.length < 6) return showError('reg-err', 'Password must be 6+ characters.');
+
+  const users = JSON.parse(localStorage.getItem('se_users') || '{}');
+  if (users[user]) return showError('reg-err', 'Username taken. Choose another.');
+
+  users[user] = {
+    password: btoa(pass),
+    email,
+    tier: 'free_trial',
+    joined: new Date().toLocaleDateString(),
+    giftCode: null
+  };
+  localStorage.setItem('se_users', JSON.stringify(users));
+
+  state.user = { username: user, ...users[user] };
+  saveState();
+  showPaywall();
+}
+
+function doGiftCode() {
+  const name = document.getElementById('gift-name').value.trim();
+  const code = document.getElementById('gift-code').value.trim().toUpperCase();
+  const pass = document.getElementById('gift-pass').value;
+
+  if (!name || !code || !pass) return showError('gift-err', 'Fill in all fields.');
+  if (pass.length < 6) return showError('gift-err', 'Password must be 6+ characters.');
+
+  if (!GIFT_CODES[code]) return showError('gift-err', 'Invalid code. Check with Marcus.');
+  if (GIFT_CODES[code].used) return showError('gift-err', 'This code has already been redeemed. Need to subscribe.');
+
+  // Mark used
+  GIFT_CODES[code].used = true;
+  saveState();
+
+  const username = name.toLowerCase().replace(/\s+/g, '_');
+  const users = JSON.parse(localStorage.getItem('se_users') || '{}');
+  users[username] = {
+    password: btoa(pass),
+    email: '',
+    tier: 'founding_member',
+    joined: new Date().toLocaleDateString(),
+    giftCode: code,
+    displayName: GIFT_CODES[code].name
+  };
+  localStorage.setItem('se_users', JSON.stringify(users));
+
+  state.user = { username, ...users[username] };
+  saveState();
+  showToast('Welcome ' + GIFT_CODES[code].name + '! Lifetime access activated.', 'success');
+  setTimeout(enterApp, 1200);
+}
+
+function doLogout() {
+  state.user = null;
+  saveState();
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('auth-screen').classList.add('active');
+  switchAuthTab('login');
+}
+
+function showPaywall() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('paywall-screen').classList.add('active');
+}
+
+function goToPayment() { showPaywall(); }
+
+// ===
+//  APP INIT
+// ===
+
+function enterApp() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('app-screen').classList.add('active');
+
+  const u = state.user;
+  document.getElementById('topbar-username').textContent = u.displayName || u.username;
+  document.getElementById('topbar-tier').textContent =
+    u.tier === 'founding_member' ? '\u2605 FOUNDING MEMBER' : '\u2605 MEMBER';
+  document.getElementById('info-username').textContent = u.username;
+  document.getElementById('info-tier').textContent =
+    u.tier === 'founding_member' ? 'Lifetime (Founding Member)' : 'Subscriber';
+  document.getElementById('info-since').textContent = u.joined;
+
+  document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
+
+  updateBankrollDisplay();
+  renderPicks();
+  renderHistory();
+}
+
+// ===
+//  NAVIGATION
+// ===
+
+function switchTab(tab) {
+  document.querySelectorAll('.ctab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('ctab-' + tab).classList.add('active');
+  document.getElementById('nav-' + tab).classList.add('active');
+  // Show sport filter only on picks tab
+  const sf = document.querySelector('.sport-filter');
+  if (sf) sf.style.display = (tab === 'picks') ? '' : 'none';
+}
+
+function filterSport(sport, btn) {
+  state.activeSport = sport;
+  document.querySelectorAll('.sf-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderPicks();
+}
+
+// ===
+//  PICKS DATA
+// ===
+
+const const PICKS_DATA = [
+  {
+    sport: 'NBA',
+    event: 'NBA Regular Season',
+    matchup: 'Cleveland Cavaliers vs Detroit Pistons',
+    pick: 'Cleveland Cavaliers -6.5',
+    odds: '-110',
+    book: 'FanDuel',
+    edge: '+9.5%',
+    ev: '+4.2%',
+    confidence: 'HIGH',
+    betSize: 'UNIT',
+    analysis: 'The Cavaliers are in strong form and have a significant talent advantage over the struggling Pistons. Expect Cleveland to cover this spread with their consistent offensive and defensive performance.',
+    isFight: false
+  },
+  {
+    sport: 'NBA',
+    event: 'NBA Regular Season',
+    matchup: 'Los Angeles Lakers vs Golden State Warriors',
+    pick: 'Over 234.5 Total Points',
+    odds: '-115',
+    book: 'DraftKings',
+    edge: '+8.1%',
+    ev: '+3.7%',
+    confidence: 'MED',
+    betSize: 'UNIT',
+    analysis: 'Both the Lakers and Warriors play at a high pace and are prone to defensive lapses. This matchup typically results in a high-scoring affair with plenty of offensive firepower on display.',
+    isFight: false
+  },
+  {
+    sport: 'NBA',
+    event: 'NBA Regular Season',
+    matchup: 'Milwaukee Bucks vs Chicago Bulls',
+    pick: 'Milwaukee Bucks -4.5',
+    odds: '-110',
+    book: 'BetMGM',
+    edge: '+10.8%',
+    ev: '+4.8%',
+    confidence: 'HIGH',
+    betSize: '2 UNITS',
+    analysis: 'The Bucks typically dominate the Bulls, especially at home, with Giannis Antetokounmpo leading the charge. Chicago struggles to contain Milwaukee\'s star power, making the spread a good value.',
+    isFight: false
+  },
+  {
+    sport: 'NHL',
+    event: 'NHL Regular Season',
+    matchup: 'Buffalo Sabres vs Florida Panthers',
+    pick: 'Florida Panthers -1.5',
+    odds: '+105',
+    book: 'Caesars',
+    edge: '+7.3%',
+    ev: '+3.4%',
+    confidence: 'MED',
+    betSize: 'UNIT',
+    analysis: 'The Panthers are a top-tier team with a potent offense and strong goaltending, while the Sabres often struggle on the road. Florida should comfortably win this game by multiple goals.',
+    isFight: false
+  },
+  {
+    sport: 'NHL',
+    event: 'NHL Regular Season',
+    matchup: 'Boston Bruins vs Philadelphia Flyers',
+    pick: 'Boston Bruins Moneyline',
+    odds: '-130',
+    book: 'Bovada',
+    edge: '+9.9%',
+    ev: '+4.5%',
+    confidence: 'HIGH',
+    betSize: 'UNIT',
+    analysis: 'Boston consistently performs well against divisional opponents and their veteran core provides a significant advantage. The Flyers are competitive but may struggle to match the Bruins\' intensity.',
+    isFight: false
+  },
+  {
+    sport: 'NHL',
+    event: 'NHL Regular Season',
+    matchup: 'Vegas Golden Knights vs Pittsburgh Penguins',
+    pick: 'Under 6.5 Total Goals',
+    odds: '-110',
+    book: 'FanDuel',
+    edge: '+6.5%',
+    ev: '+3.0%',
+    confidence: 'MED',
+    betSize: 'UNIT',
+    analysis: 'Both teams have strong defensive capabilities and experienced goaltenders, often leading to lower-scoring games. This matchup typically sees tight play and limited offensive opportunities.',
+    isFight: false
+  },
+  {
+    sport: 'NCAAB',
+    event: 'NCAA Men\'s Basketball',
+    matchup: 'Michigan vs Illinois',
+    pick: 'Illinois -8.5',
+    odds: '-110',
+    book: 'DraftKings',
+    edge: '+10.1%',
+    ev: '+4.6%',
+    confidence: 'HIGH',
+    betSize: '2 UNITS',
+    analysis: 'Illinois is a dominant force at home with a high-powered offense and stout defense. Michigan has been inconsistent on the road and will likely struggle to keep pace with the Illini.',
+    isFight: false
+  },
+  {
+    sport: 'NCAAB',
+    event: 'NCAA Men\'s Basketball',
+    matchup: 'NC State Wolfpack vs Notre Dame Fighting Irish',
+    pick: 'NC State Wolfpack Moneyline',
+    odds: '-150',
+    book: 'BetMGM',
+    edge: '+8.8%',
+    ev: '+3.9%',
+    confidence: 'MED',
+    betSize: 'UNIT',
+    analysis: 'NC State has shown flashes of brilliance this season and possesses a more athletic roster than Notre Dame. The Wolfpack should be able to secure a road victory in a competitive conference matchup.',
+    isFight: false
+  },
+  {
+    sport: 'NCAAB',
+    event: 'NCAA Men\'s Basketball',
+    matchup: 'UConn vs Seton Hall University',
+    pick: 'UConn -5.5',
+    odds: '-110',
+    book: 'Caesars',
+    edge: '+11.5%',
+    ev: '+5.3%',
+    confidence: 'HIGH',
+    betSize: 'UNIT',
+    analysis: 'UConn is a perennial powerhouse with strong fundamental play and excellent coaching. Seton Hall, while competitive, will find it difficult to match UConn\'s intensity and execution for a full game.',
+    isFight: false
+  }
+];
+
+function renderPicks() {
+  const container = document.getElementById('picks-container');
+  const filtered = state.activeSport === 'all'
+    ? PICKS_DATA
+    : PICKS_DATA.filter(p => p.sport === state.activeSport);
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="empty-state"><p>No ${state.activeSport} picks today.<br>Check back after the next scan.</p></div>`;
+    return;
+  }
+
+  // Calculate bet sizes €” split bankroll evenly across HIGH picks tonight
+  const highPicks = filtered.filter(p => p.confidence === 'HIGH');
+  const perBet = highPicks.length > 0 ? (state.bankroll / highPicks.length).toFixed(2) : '0';
+
+  container.innerHTML = filtered.map((p, i) => {
+    const isUFC = p.sport === 'UFC';
+    const sportClass = p.sport.toLowerCase().replace(/\s/g,'');
+    const edgeNum = parseFloat(p.edge);
+    const barWidth = Math.min(edgeNum * 2.5, 100);
+    const barClass = edgeNum >= 15 ? 'high' : edgeNum >= 8 ? 'med' : 'low';
+    const betAmt = p.confidence === 'HIGH' ? perBet : (state.bankroll * 0.05).toFixed(2);
+
+    let matchupHTML = '';
+    if (p.isFight) {
+      matchupHTML = `
+        <div class="fighter-row">
+          <span class="fighter-name ${p.fighter1.picked ? 'picked' : ''}">${p.fighter1.name}</span>
+          <span class="fighter-odds ${p.fighter1.picked ? 'picked' : ''}">${p.fighter1.odds}</span>
+        </div>
+        <div class="fight-divider">
+          <div class="fight-line"></div>
+          <span class="fight-vs">VS</span>
+        </div>
+        <div class="fighter-row">
+          <span class="fighter-name ${p.fighter2.picked ? 'picked' : ''}">${p.fighter2.name}</span>
+          <span class="fighter-odds ${p.fighter2.picked ? 'picked' : ''}">${p.fighter2.odds}</span>
+        </div>
+      `;
+    } else {
+      matchupHTML = `<div class="pick-matchup">${p.matchup}</div>`;
+    }
+
+    return `
+      <div class="pick-card ${isUFC ? 'ufc-card' : ''}" style="animation-delay:${i * 0.05}s">
+        <div class="pick-sport-tag ${sportClass}">
+          <span class="sport-label ${sportClass}">${p.sport}  ${p.event}</span>
+          <span class="conf-badge ${p.confidence}">${p.confidence}</span>
+        </div>
+        <div class="pick-body">
+          ${matchupHTML}
+          <div class="pick-rec ${isUFC ? 'ufc-rec' : ''}">
+            <div class="pick-rec-text">▶ BET ${p.pick} ${p.odds} @ ${p.book}  Suggested: $${betAmt}</div>
+          </div>
+          <div style="padding: 0 0 0.5rem; font-family: var(--mono); font-size: 0.68rem; color: var(--text3); line-height: 1.5;">${p.analysis}</div>
+        </div>
+        <div class="edge-bar-wrap">
+          <div class="edge-bar-label">
+            <span>MODEL EDGE</span>
+            <span>${p.edge}  EV ${p.ev}</span>
+          </div>
+          <div class="edge-bar-track">
+            <div class="edge-bar-fill ${barClass}" style="width:${barWidth}%"></div>
+          </div>
+        </div>
+        <div class="pick-stats">
+          <div class="ps-cell">
+            <div class="ps-val odds-good">${p.odds}</div>
+            <div class="ps-label">Odds</div>
+          </div>
+          <div class="ps-cell">
+            <div class="ps-val edge">${p.edge}</div>
+            <div class="ps-label">Edge</div>
+          </div>
+          <div class="ps-cell">
+            <div class="ps-val">$${betAmt}</div>
+            <div class="ps-label">Bet Size</div>
+          </div>
+          <div class="ps-cell">
+            <div class="ps-val">${p.book}</div>
+            <div class="ps-label">Book</div>
+          </div>
+        </div>
+        <a href="${getBookLink(p.book)}" target="_blank" rel="noopener" class="bet-now-btn${isUFC ? ' ufc-bet' : ''}">&#9654; BET NOW @ ${p.book}</a>
+      </div>
+    `;
+  }).join('');
+}
+
+// ===
+//  HISTORY DATA
+// ===
+
+const HISTORY = [
+  { date: 'Feb 15', sport: 'NCAAB', matchup: 'Dayton vs Davidson', pick: 'Dayton -190', result: 'win', score: '70-59', pnl: '+\.53' },
+  { date: 'Feb 15', sport: 'NCAAB', matchup: 'Charleston vs Campbell', pick: 'Charleston +100', result: 'win', score: '62-57', pnl: '+\.00' },
+  { date: 'Feb 15', sport: 'NCAAB', matchup: 'Belmont vs Murray St', pick: 'Belmont +105', result: 'win', score: '87-70', pnl: '+\.00' },
+  { date: 'Feb 17', sport: 'NCAAB', matchup: 'SE Missouri vs Tenn-Martin', pick: 'SE Missouri +135', result: 'win', score: '56-53 OT', pnl: '+\.00' },
+  { date: 'Feb 18', sport: 'NCAAB', matchup: 'Kansas State vs Baylor', pick: 'K-State +157', result: 'win', score: '90-74', pnl: '+\.40' },
+  { date: 'Feb 18', sport: 'NCAAB', matchup: 'Georgia vs Kentucky', pick: 'Georgia +245', result: 'win', score: '86-78', pnl: '+\.00' },
+  { date: 'Feb 18', sport: 'NCAAB', matchup: 'Iowa vs Nebraska', pick: 'Iowa -117', result: 'win', score: '57-52', pnl: '+\.09' },
+  { date: 'Feb 18', sport: 'NCAAB', matchup: 'Virginia Tech vs Miami', pick: 'VTech +295', result: 'loss', score: '66-67', pnl: '-\.00' },
+  { date: 'Feb 19', sport: 'NCAAB', matchup: 'La Salle vs Duquesne', pick: 'La Salle +630', result: 'loss', score: '61-62', pnl: '-\.00' },
+  { date: 'Feb 19', sport: 'NCAAB', matchup: 'Fort Wayne vs N. Kentucky', pick: 'Fort Wayne +250', result: 'loss', score: '71-87', pnl: '-\.00' },
+];
+
+function renderHistory() {
+  const container = document.getElementById('history-container');
+  container.innerHTML = HISTORY.map(h => `
+    <div class="hist-card ${h.result}">
+      <div class="hist-card-top">
+        <div>
+          <div style="font-family:var(--mono);font-size:0.6rem;color:var(--text3);margin-bottom:0.2rem">${h.date}  ${h.sport}</div>
+          <div class="hist-matchup">${h.matchup}</div>
+        </div>
+        <div class="hist-result ${h.result}">${h.result.toUpperCase()}</div>
+      </div>
+      <div class="hist-card-bot">
+        <div class="hcb-item">Pick<span>${h.pick}</span></div>
+        <div class="hcb-item">Final<span>${h.score}</span></div>
+        <div class="hcb-item" style="text-align:right">P&L<span style="color:${h.result==='win'?'var(--green)':'var(--red)'}">${h.pnl}</span></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===
+//  BANKROLL TRACKER
+// ===
+
+function updateBankrollDisplay() {
+  const wins = state.bets.filter(b => b.type === 'win').reduce((s, b) => s + b.profit, 0);
+  const losses = state.bets.filter(b => b.type === 'loss').reduce((s, b) => s + b.stake, 0);
+  const pnl = wins - losses;
+  const roi = state.startBankroll > 0 ? ((pnl / state.startBankroll) * 100).toFixed(1) : 0;
+  const w = state.bets.filter(b => b.type === 'win').length;
+  const l = state.bets.filter(b => b.type === 'loss').length;
+
+  document.getElementById('br-balance').textContent = '$' + state.bankroll.toFixed(0);
+  document.getElementById('br-pnl').textContent = (pnl >= 0 ? '+' : '') + '$' + pnl.toFixed(0);
+  document.getElementById('br-pnl').className = 'br-val ' + (pnl >= 0 ? 'up' : 'down');
+  document.getElementById('br-record').textContent = w + '-' + l;
+  document.getElementById('br-roi').textContent = (roi >= 0 ? '+' : '') + roi + '%';
+  document.getElementById('br-roi').className = 'br-val ' + (roi >= 0 ? 'up' : 'down');
+  document.getElementById('bk-current').textContent = '$' + state.bankroll.toFixed(2);
+  document.getElementById('bk-start').textContent = '$' + state.startBankroll.toFixed(2);
+}
+
+function calcPayout(stake, odds) {
+  odds = parseInt(odds);
+  if (isNaN(odds)) return stake;
+  if (odds > 0) return stake * (odds / 100);
+  else return stake * (100 / Math.abs(odds));
+}
+
+function logWin() {
+  const desc = document.getElementById('bet-desc').value.trim();
+  const stake = parseFloat(document.getElementById('bet-stake').value);
+  const odds = document.getElementById('bet-odds').value.trim();
+  if (!desc || isNaN(stake)) return showToast('Fill in description and stake.', 'error');
+  const profit = calcPayout(stake, odds);
+  state.bankroll += profit;
+  state.bets.unshift({ type: 'win', desc, stake, odds, profit, date: new Date().toLocaleDateString() });
+  saveState();
+  updateBankrollDisplay();
+  renderBetLog();
+  document.getElementById('bet-desc').value = '';
+  document.getElementById('bet-stake').value = '';
+  document.getElementById('bet-odds').value = '';
+  showToast('&#x2713;… Win logged! +$' + profit.toFixed(2), 'success');
+}
+
+function logLoss() {
+  const desc = document.getElementById('bet-desc').value.trim();
+  const stake = parseFloat(document.getElementById('bet-stake').value);
+  if (!desc || isNaN(stake)) return showToast('Fill in description and stake.', 'error');
+  state.bankroll -= stake;
+  state.bets.unshift({ type: 'loss', desc, stake, odds: '', profit: 0, date: new Date().toLocaleDateString() });
+  saveState();
+  updateBankrollDisplay();
+  renderBetLog();
+  document.getElementById('bet-desc').value = '';
+  document.getElementById('bet-stake').value = '';
+  document.getElementById('bet-odds').value = '';
+  showToast('Loss logged. -$' + stake.toFixed(2), 'error');
+}
+
+function renderBetLog() {
+  const container = document.getElementById('bk-log-entries');
+  document.getElementById('bk-entry-count').textContent = state.bets.length + ' entries';
+  if (state.bets.length === 0) {
+    container.innerHTML = '<div class="bk-empty">No bets logged yet.</div>';
+    return;
+  }
+  container.innerHTML = state.bets.map(b => `
+    <div class="bk-entry">
+      <div class="bk-entry-desc">
+        <strong>${b.desc}</strong>
+        ${b.date} ${b.odds ? ' ' + b.odds : ''}
+      </div>
+      <div class="bk-entry-amt ${b.type === 'win' ? 'pos' : 'neg'}">
+        ${b.type === 'win' ? '+$' + b.profit.toFixed(2) : '-$' + b.stake.toFixed(2)}
+      </div>
+    </div>
+  `).join('');
+}
+
+function openBankrollModal() {
+  document.getElementById('modal-bankroll-input').value = state.bankroll.toFixed(2);
+  document.getElementById('bankroll-modal').classList.add('open');
+}
+
+function closeBankrollModal(e) {
+  if (e.target === document.getElementById('bankroll-modal')) {
+    document.getElementById('bankroll-modal').classList.remove('open');
+  }
+}
+
+function saveBankroll() {
+  const val = parseFloat(document.getElementById('modal-bankroll-input').value);
+  if (isNaN(val) || val < 0) return showToast('Enter a valid amount.', 'error');
+  state.bankroll = val;
+  state.startBankroll = val;
+  state.bets = [];
+  saveState();
+  updateBankrollDisplay();
+  renderBetLog();
+  document.getElementById('bankroll-modal').classList.remove('open');
+  showToast('Bankroll set to $' + val.toFixed(2), 'success');
+  renderPicks();
+}
+
+// ===
+//  TOAST
+// ===
+
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + (type || '');
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+// ===
+//  BOOT
+// ===
+
+function selectPlan(plan){var mD=document.getElementById('price-monthly-display'),yD=document.getElementById('price-yearly-display'),bM=document.getElementById('plan-btn-monthly'),bY=document.getElementById('plan-btn-yearly'),aE=document.getElementById('cashapp-amount');if(plan==='monthly'){if(mD)mD.style.display='block';if(yD)yD.style.display='none';if(bM){bM.style.background='var(--red)';bM.style.color='#fff';}if(bY){bY.style.background='var(--surface)';bY.style.color='var(--text2)';}if(aE)aE.textContent='$14.99';}else{if(mD)mD.style.display='none';if(yD)yD.style.display='block';if(bY){bY.style.background='var(--gold)';bY.style.color='#000';}if(bM){bM.style.background='var(--surface)';bM.style.color='var(--text2)';}if(aE)aE.textContent='$149';}}
+function openCashApp(){var yD=document.getElementById('price-yearly-display');var amt=(yD&&yD.style.display!=='none')?'149':'14.99';window.open('https://cash.app/$marcuzz315/'+amt,'_blank');}
+const BOOK_LINKS={'FanDuel':'https://www.fanduel.com/join#JOIN','DraftKings':'https://www.draftkings.com/r/DK1_SHARP','BetMGM':'https://sports.betmgm.com/en/sports','Caesars':'https://www.caesars.com/sportsbook-and-casino','Bovada':'https://www.bovada.lv/welcome/P','BetOnlineAG':'https://www.betonline.ag/sportsbook','default':'https://www.fanduel.com/join#JOIN'};
+function getBookLink(b){return BOOK_LINKS[b]||BOOK_LINKS['default'];}
+const REVIEWS=[{stars:5,text:"Georgia +245 hit last week. $50 in, $125 profit. These aren't random tips - the model finds actual value.",user:'jdawg_bets',date:'Feb 20'},{stars:5,text:"K-State +157 over Baylor. SE Missouri in OT. Dayton ML. 7-3 last week isn't luck - it's math.",user:'coachK_locks',date:'Feb 19'},{stars:5,text:"First app that explains WHY a pick has edge. EV and edge % are legit. Sharp bettors think this way.",user:'sharpbets99',date:'Feb 18'},{stars:4,text:"Arb detector alone is worth it. Found a 12% guaranteed on Fresno St. Both sides placed in 5 min.",user:'arbking_pro',date:'Feb 17'},{stars:5,text:"Was skeptical. Iowa -117 hit, Georgia +245 hit, K-State +157 hit. $100 to $180 in one week. Enough said.",user:'midwest_sharp',date:'Feb 16'},{stars:5,text:"UFC picks are elite. Books are terrible at MMA pricing. Up $340 on UFC alone this month.",user:'octagon_edge',date:'Feb 15'}];
+function renderReviews(id){var el=document.getElementById(id);if(!el)return;el.innerHTML=REVIEWS.map(function(r){var s='';for(var i=0;i<r.stars;i++)s+='&#11088;';return '<div class="review-card"><div class="review-stars">'+s+'</div><div class="review-text">&ldquo;'+r.text+'&rdquo;</div><div class="review-meta">@'+r.user+' &bull; '+r.date+', 2026</div></div>';}).join('');}
+const ARBS=[
+  {matchup:'Oklahoma City Thunder vs Memphis Grizzlies',sport:'NBA',margin:'4.8%',guar:'\',legs:[{team:'OKC Thunder ML',odds:'-165',book:'Bovada',stake:'\.58'},{team:'Memphis Grizzlies ML',odds:'+195',book:'FanDuel',stake:'\.42'}]},
+  {matchup:'Boston Celtics vs Milwaukee Bucks',sport:'NBA',margin:'3.2%',guar:'\',legs:[{team:'Celtics -4.5',odds:'-110',book:'FanDuel',stake:'\.00'},{team:'Bucks +5.5',odds:'+108',book:'DraftKings',stake:'\.00'}]},
+  {matchup:'Florida Panthers vs Tampa Bay Lightning',sport:'NHL',margin:'5.1%',guar:'\',legs:[{team:'Panthers ML',odds:'-138',book:'BetMGM',stake:'\.25'},{team:'Lightning ML',odds:'+172',book:'Caesars',stake:'\.75'}]},
+  {matchup:'Duke Blue Devils vs North Carolina',sport:'NCAAB',margin:'6.7%',guar:'\',legs:[{team:'Duke -3.5',odds:'-112',book:'DraftKings',stake:'\.39'},{team:'UNC +4.5',odds:'+118',book:'FanDuel',stake:'\.61'}]},
+  {matchup:'Toronto Maple Leafs vs Boston Bruins',sport:'NHL',margin:'4.3%',guar:'\',legs:[{team:'Maple Leafs ML',odds:'+105',book:'Bovada',stake:'\.80'},{team:'Bruins ML',odds:'+112',book:'BetMGM',stake:'\.20'}]}
+];
+function renderArbs(){var c=document.getElementById('arbs-container');if(!c)return;c.innerHTML=ARBS.map(function(a){var legs=a.legs.map(function(l){return '<div class="arb-leg"><div class="arb-leg-left"><div class="arb-leg-team">'+l.team+'</div><div class="arb-leg-stake">Stake: '+l.stake+'</div></div><div class="arb-leg-right"><div class="arb-odds-tag">'+l.odds+'</div><div class="arb-book-tag">'+l.book+'</div></div></div>';}).join('');var bets=a.legs.map(function(l){return '<a href="'+getBookLink(l.book)+'" target="_blank" rel="noopener" class="arb-bet-btn">BET '+l.team+' @ '+l.book+'</a>';}).join('');return '<div class="arb-card"><div class="arb-header"><div><div style="font-family:var(--mono);font-size:0.58rem;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;">'+a.sport+'</div><div style="font-family:var(--head);font-size:1rem;font-weight:800;text-transform:uppercase;">'+a.matchup+'</div></div><div style="text-align:right;"><div class="arb-profit-badge">+'+a.margin+'</div><div style="font-family:var(--mono);font-size:0.58rem;color:var(--text3);margin-top:0.2rem;">~'+a.guar+' locked</div></div></div>'+legs+'<div class="arb-bet-row">'+bets+'</div></div>';}).join('');}
+loadState();
+renderBetLog();
+renderReviews('paywall-reviews');
+renderReviews('info-reviews');
+
+if (state.user) {
+  enterApp();
+}
+
+window.BLOGS = [
+  { title: "Advanced Analytics for Smarter Bets", excerpt: "Stop guessing. Start winning with data-driven picks and real analytics that expose the edge other bettors never see.", content: "# Advanced Analytics for Smarter Sports Bets: Unlocking Your Data Edge with SharpEdge\n\n**Remember when sports betting was primarily about gut feelings, favorite teams, and a bit of luck?** Those days are rapidly becoming a relic of the past. In today\'s hyper-competitive landscape, sports betting has evolved into a sophisticated, data-driven science. For the serious bettor, relying solely on traditional statistics or intuition is akin to bringing a knife to a gunfight. The key differentiator for consistent success now lies in **advanced analytics**. This article will explore how these powerful analytical techniques are transforming betting into a strategic endeavor, and how SharpEdge positions itself at the forefront, equipping you with the tools to unlock a decisive data edge.\n\n### Beyond Basic Stats: What Are Advanced Analytics?\n\nTraditional sports statistics – points, goals, assists, wins, losses – provide a descriptive overview of what happened. They tell you the *outcome*. Advanced analytics, however, delve deeper. They seek to understand *how* and *why* those outcomes occurred, focusing on **predictive power** rather than mere description.\n\nThink of it this way: a simple box score tells you a team scored two goals. Advanced metrics like Expected Goals (xG) in soccer tell you the *quality* and *volume* of chances that led to those goals, and how many goals a team *should have* scored based on their opportunities. Similarly, in basketball, while points and rebounds are basic, Offensive/Defensive Efficiency ratings tell you how many points a team scores or concedes per 100 possessions, offering a truer measure of their effectiveness.\n\nThese metrics move beyond the surface, revealing underlying performance and tendencies that aren\'t always captured by the final score or traditional statistics. They allow bettors to identify teams or players who are performing better (or worse) than their results suggest, indicating potential for regression or progression – invaluable insights for finding betting value.\n\n### Key Advanced Metrics Across Different Sports\n\nThe application of advanced analytics varies by sport, each having its own specialized metrics designed to capture crucial performance indicators.\n\n*   **Football (Soccer):**\n    *   **Expected Goals (xG):** Quantifies the quality of a scoring chance, indicating how many goals a team or player *should have* scored.\n    *   **Expected Assists (xA):** Measures the likelihood that a pass would become an assist.\n    *   **PPDA (Passes Per Defensive Action):** A proxy for pressing intensity – lower PPDA means more aggressive pressing.\n    *   **Shot Conversion Rate:** Not just how many shots, but how effective they are.\n\n*   **Basketball:**\n    *   **True Shooting Percentage (TS%):** A more accurate measure of shooting efficiency, accounting for 2-pointers, 3-pointers, and free throws.\n    *   **Usage Rate (USG%):** Estimates the percentage of team possessions a player uses.\n    *   **Defensive Rebounding Percentage (DRB%):** The percentage of available defensive rebounds a team or player collects.\n\n*   **American Football:**\n    *   **DVOA (Defense-adjusted Value Over Average):** Measures a team\'s efficiency by comparing every single play to a league-average baseline, adjusted for opponent.\n    *   **EPA (Expected Points Added):** Assigns a value to each play based on how it changes a team\'s probability of scoring.\n\nThese are just a few examples. Each metric provides a deeper layer of understanding, allowing for more precise forecasting and the identification of hidden edges.\n\n### How SharpEdge Leverages Advanced Analytics: Your Competitive Advantage\n\nAt SharpEdge, advanced analytics aren\'t just a buzzword; they are the bedrock of our platform. We understand that to provide a true competitive advantage, we must process and interpret data at a level far beyond what individual bettors can manage manually.\n\nSharpEdge\'s power lies in its **proprietary algorithms** that seamlessly integrate vast datasets of these advanced metrics from across numerous sports. Our systems are constantly:\n\n*   **Collecting and Cleansing Data:** Aggregating billions of data points from every game, player, and team performance.\n*   **Running Sophisticated Models:** Utilizing complex statistical and machine learning models to identify patterns, correlations, and predictive trends that human analysis alone would miss.\n*   **Identifying Hidden Value:** By comparing our objectively calculated probabilities (derived from advanced analytics) against bookmaker odds, SharpEdge identifies situations where the market has mispriced an outcome, presenting clear value betting opportunities.\n*   **Interpreting Complex Data into Actionable Insights:** We don\'t just dump raw data on you. SharpEdge translates these intricate analytical outputs into user-friendly dashboards, clear predictions, and actionable betting recommendations.\n\nThis means you get the benefit of cutting-edge data science without needing to be a data scientist yourself. SharpEdge ensures you\'re always betting with the most informed perspective possible.\n\n### From Data to Decisions: Implementing Analytical Insights\n\nThe goal of advanced analytics is to inform smarter decisions. Here\'s how to implement these insights effectively:\n\n1.  **Identify Overvalued/Undervalued Teams/Players:** Metrics like xG or DVOA can reveal teams whose results are either unsustainably good (overvalued) or unluckily bad (undervalued). Betting against overperforming teams or on underperforming teams (with underlying strong metrics) can be highly profitable.\n2.  **Spot Discrepancies Between Perceived Form and Underlying Performance:** A team might be on a winning streak, but if their advanced metrics show they\'re being outplayed and just getting lucky, that\'s a red flag. Conversely, a team on a losing streak might have strong underlying numbers, indicating they\'re due for a turnaround.\n3.  **Combine Analytical Insights with Qualitative Factors:** While data is king, it\'s not the *only* factor. Incorporate qualitative information such as team morale, coaching changes, fixture congestion, and individual player motivation to refine your betting decisions. Analytics provides the \"what,\" qualitative factors help explain the \"why.\"\n\n### The Future of Sports Betting: AI and Machine Learning\n\nThe evolution doesn\'t stop here. The future of sports betting will be increasingly shaped by **Artificial Intelligence (AI) and Machine Learning (ML)**. These technologies are constantly refining predictive accuracy by:\n\n*   **Identifying Non-Obvious Correlations:** ML models can detect complex relationships between variables that human analysts might never uncover.\n*   **Adapting to Evolving Data:** AI systems can continuously learn from new data, improving their predictive models over time.\n*   **Simulating Outcomes:** Running thousands of game simulations based on various inputs to predict probabilities more accurately.\n\nSharpEdge is committed to staying at the forefront of this technological shift, continuously enhancing our models and tools to provide you with the most advanced, data-driven betting solutions available.\n\n### Conclusion: Stop Guessing, Start Knowing. Harness the Power of Advanced Analytics with SharpEdge!\n\nAdvanced analytics are no longer a luxury for serious sports bettors; they are an absolute necessity for anyone looking to gain and maintain a consistent edge. By moving beyond basic statistics and embracing the deeper insights offered by metrics like xG, DVOA, and efficiency ratings, you transform your betting strategy from speculative to scientific.\n\nSharpEdge is your trusted partner in navigating this complex, data-rich environment. We empower you to harness the full power of advanced analytics, providing you with the clarity, precision, and actionable intelligence needed to make smarter, more profitable sports bets.\n\n**Stop guessing, start knowing. Unlock the definitive data edge. Join SharpEdge today and revolutionize your sports betting success!**" },
+  { title: "How to Win at Sports Betting", excerpt: "Strategies the pros use that books hate. Real frameworks, real results. Here's what actually works.", content: "# How to Win at Sports Betting: Strategies from the Pros (with SharpEdge)\n\n**The allure of sports betting is undeniable.** The thrill of predicting an outcome, the rush of a win, and the dream of turning sporting knowledge into profit. However, for many, this dream quickly devolves into frustration and financial loss. The common pitfall is the belief that winning at sports betting is purely a matter of luck or simply having a \"good feeling.\" This couldn\'t be further from the truth. Professional bettors will tell you that consistent success isn\'t about fortune; it\'s about a disciplined application of proven strategies. This article will unveil these professional strategies, and demonstrate how SharpEdge can be your indispensable partner in elevating your game and finally answering the question: \"How to win at sports betting?\"\n\n### Understanding the Fundamentals: Beyond the Odds\n\nBefore diving into advanced tactics, a solid grasp of the basics is paramount. Betting isn\'t just about picking a winner; it\'s about understanding the underlying mechanics.\n\n*   **Odds:** These numbers (e.g., 2.00, -110) represent the bookmaker\'s implied probability of an event occurring and the payout you receive if your bet wins.\n*   **Types of Bets:**\n    *   **Moneyline:** Simply picking the winner of a game.\n    *   **Point Spread:** Betting on a team to win by a certain margin or lose by less than a certain margin.\n    *   **Totals (Over/Under):** Betting on the combined score of both teams to be over or under a specified number.\n    *   And many more, from prop bets to parlays.\n*   **Implied Probability:** Every set of odds can be converted into an implied probability. For example, odds of 2.00 imply a 50% chance. The key is understanding if *your* assessment of the actual probability differs from the bookmaker\'s.\n\nThis is where SharpEdge steps in. Our platform demystifies these concepts, providing clear explanations and tools to help you intuitively grasp the betting landscape, preparing you for more advanced strategies.\n\n### Strategy 1: The Cornerstone – Value Betting\n\nIf there\'s one strategy that underpins consistent profitability for professional bettors, it\'s **value betting**. This isn\'t about picking the team you *think* will win; it\'s about finding situations where the bookmaker has *underestimated* the true probability of an event, offering odds that are higher than they should be.\n\nImagine you assess a team has a 60% chance of winning, but the bookmaker\'s odds imply only a 50% chance. That 10% discrepancy is where the value lies. Over the long run, consistently placing bets where you have a \"value edge\" will lead to profit, regardless of short-term outcomes.\n\n**How to identify value:**\n*   **Thorough Research:** Dig deep into team news, statistics, form, injuries, and head-to-head records.\n*   **Statistical Models:** Develop or utilize models that can more accurately predict outcomes than the market.\n*   **SharpEdge\'s Tools:** SharpEdge excels at this. Our advanced algorithms constantly scan thousands of odds across numerous bookmakers, comparing them against our meticulously calculated probabilities to highlight clear value opportunities, saving you countless hours of manual research.\n\nEmbrace value betting, and you\'re no longer just gambling; you\'re investing in advantageous probabilities.\n\n### Strategy 2: Protecting Your Capital – Bankroll Management\n\nEven with the sharpest picks, poor **bankroll management** is the fastest route to financial ruin in sports betting. Your \"bankroll\" is the specific amount of money you\'ve set aside *solely* for betting, distinct from your living expenses. Treating your bankroll like a business\'s capital is crucial for sustainability.\n\n*   **Define Your Bankroll:** Only bet with money you can comfortably afford to lose. This mitigates emotional decisions and financial stress.\n*   **Staking Plans:**\n    *   **Flat Staking:** The most common and recommended for beginners. You bet a consistent percentage (e.g., 1-2%) of your bankroll on each wager, regardless of confidence. If your bankroll grows, your unit size grows proportionally.\n    *   **Proportional Staking (e.g., Kelly Criterion):** More advanced methods that adjust stake size based on the perceived edge. While potentially maximizing growth, these are higher risk and require a deep understanding of probability. SharpEdge helps you track your units and overall bankroll performance effortlessly, ensuring you stick to your chosen plan.\n\nNever chase losses, and always prioritize the longevity of your bankroll over any single bet.\n\n### Strategy 3: Sharpening Your Focus – Specialization and Research\n\nThe world of sports is vast. Trying to become an expert in every league and every sport is a recipe for mediocrity. Professional bettors often find their edge by **specializing** in specific niches.\n\n*   **Focus Your Efforts:** Concentrate on 1-3 sports or leagues where you can truly develop an in-depth understanding of the teams, players, coaches, and unique dynamics.\n*   **In-Depth Research:** This is non-negotiable. Beyond basic statistics, delve into:\n    *   **Team News:** Injuries, suspensions, managerial changes, team morale.\n    *   **Motivational Factors:** Is a team fighting for relegation, a playoff spot, or playing a dead rubber?\n    *   **Historical Matchups:** Does one team consistently perform well or poorly against a particular opponent?\n    *   **Situational Spots:** Back-to-back games, travel fatigue, schedule congestion.\n\nSharpEdge is designed to **streamline your research process**. Our comprehensive databases, real-time data feeds, and analytical tools provide you with all the information you need to conduct superior research quickly and efficiently.\n\n### Common Mistakes to Avoid: Learn from Others\' Errors\n\nMany new bettors fall into predictable traps. Avoiding these can save you significant money and frustration:\n\n*   **Chasing Losses:** The urge to bet more to recoup previous losses. This almost always leads to a deeper hole.\n*   **Betting with Emotion:** Letting personal biases for or against a team, or the excitement of a big game, override logical analysis.\n*   **Ignoring Data:** Relying on hunches instead of objective statistics and trends.\n*   **Overconfidence:** Believing you can\'t lose after a winning streak, leading to larger, riskier bets.\n*   **The Gambler\'s Fallacy:** Believing past results influence future independent events (e.g., \"red has come up 5 times in a row, so black is due\").\n\nDiscipline and continuous learning are your best defenses against these pitfalls.\n\n### Conclusion: Elevate Your Game with SharpEdge\n\nWinning at sports betting isn\'t a pipe dream; it\'s a skill cultivated through knowledge, strategic application, and unwavering discipline. By understanding the fundamentals, embracing value betting, rigorously managing your bankroll, specializing your focus, and avoiding common mistakes, you lay the foundation for long-term success.\n\nSharpEdge isn\'t just a tool; it\'s your essential partner in this journey. We provide the analytics, the value picks, and the research assistance you need to implement these professional strategies effectively. Stop leaving your betting results to chance.\n\n**Elevate your game with SharpEdge – where smart betting wins! Sign up today and start your journey towards consistent profitability.**" },
+  { title: "Mastering Bankroll Management", excerpt: "The single skill that separates winning bettors from broke ones. Your blueprint to protecting your money.", content: "# Mastering Bankroll Management for Sports Betting Success: Your Blueprint to Profit\n\n**The adrenaline rush of sports betting is undeniably addictive.** The dream of hitting that big parlay or nailing a perfect weekend of picks keeps millions engaged. Yet, for every story of a massive win, there are countless tales of quick losses, depleted accounts, and frustrated bettors. Why do so many struggle to turn a consistent profit? Often, it\'s not due to a lack of sports knowledge or even poor picks, but a critical oversight: the failure to implement sound **bankroll management**. This isn\'t the glamorous side of betting, but it is, unequivocally, the single most important factor for long-term success. This comprehensive guide will equip you with the knowledge to protect and strategically grow your betting capital, showcasing how SharpEdge can be your indispensable partner in this journey.\n\n### What is a Bankroll and Why is it Essential?\n\nYour **bankroll** is simply the total amount of money you have specifically set aside for sports betting. This money should be entirely separate from your daily living expenses, savings, or any funds you cannot afford to lose. It\'s crucial to understand this distinction: *your bankroll is your investment capital for betting*.\n\n**Why is it essential?**\n1.  **Prevents Financial Ruin:** The most obvious, yet most overlooked, reason. Proper bankroll management ensures that a series of losses, which are inevitable in betting, does not lead to significant personal financial hardship.\n2.  **Allows for Consistent Betting:** By preserving your capital, you remain in the game. It allows you to weather variance (the natural ups and downs of betting) and continue to place bets, waiting for your long-term edge to play out.\n3.  **Facilitates Strategic Decision-Making:** When your bankroll is managed correctly, you can approach each bet objectively, free from the emotional pressure of needing to win back losses. This fosters a more rational and profitable betting mindset.\n\nTreat your bankroll not as expendable cash, but as the lifeblood of your betting operation. It’s your business capital – nurture it.\n\n### Setting Up Your Bankroll: Realistic and Disciplined Start\n\nThe first step in bankroll management is establishing your initial bankroll.\n\n*   **Determining an Appropriate Starting Amount:** This is highly individual. It should be an amount that, if completely lost, would not impact your quality of life. For some, this might be $100; for others, it could be $1000 or more. The absolute size matters less than the discipline with which you manage it.\n*   **Be Realistic and Disciplined:** Avoid starting with funds you need for rent, bills, or food. The psychological pressure of betting with \"scared money\" leads to poor decisions. Once established, commit to not replenishing it with money outside of your dedicated betting profits unless you\'re making a conscious decision to increase your investment capital (and can afford to do so).\n\nRemember this golden rule: **Never bet with money you can\'t afford to lose.**\n\n### Staking Strategies: How Much to Bet on Each Wager\n\nThis is where the rubber meets the road. Once you have a bankroll, how much of it should you risk on any single bet? The answer lies in disciplined staking strategies, designed to protect your capital while allowing for growth.\n\n1.  **Fixed Unit Staking (Recommended for Most):**\n    *   This is the simplest and often most effective strategy for the majority of bettors.\n    *   You decide on a **unit size**, which is a fixed percentage of your total bankroll. A common range is **1% to 3% per bet**.\n    *   **Example:** If your bankroll is $1,000 and you adopt a 2% unit size, each bet you place is $20.\n    *   **Dynamic Unit Sizing:** As your bankroll grows (or shrinks), your unit size adjusts accordingly. If your $1,000 bankroll grows to $1,200, your 2% unit size becomes $24. This allows for exponential growth during winning streaks and slows losses during downturns.\n    *   **Why it\'s superior:** It removes emotion from the decision of how much to bet and provides a structured approach to risk management.\n\n2.  **Proportional Staking (e.g., Kelly Criterion - Use with Caution):**\n    *   More advanced strategies that adjust your stake size based on the perceived \"edge\" or value you believe a bet holds.\n    *   The **Kelly Criterion** is a famous example, suggesting a bet size that maximizes expected wealth over the long run, but it requires an accurate assessment of your win probability and can be highly aggressive, leading to significant swings.\n    *   **Caution:** These methods are complex and require a very accurate assessment of probabilities. For beginners, they can be dangerous and lead to rapid bankroll depletion if your probability assessments are even slightly off. Stick to fixed unit staking until you have a deep understanding of value betting and a proven track record.\n\n### The Unit System Explained: Your Risk Barometer\n\nThe concept of a \"unit\" is central to modern bankroll management.\n\n*   A **unit** is a representation of your standard bet size, typically defined as 1% of your bankroll.\n*   **Example:** If your bankroll is $5,000, a 1-unit bet is $50. A 2-unit bet is $100.\n*   **How it helps:**\n    *   **Manages Risk:** By standardizing your bet size relative to your bankroll, you ensure you never risk too much on a single outcome.\n    *   **Compares Performance:** It allows you to objectively compare your betting performance (e.g., +10 units over a month) regardless of your starting bankroll or the monetary value of a unit. This is crucial for tracking your long-term profitability.\n\nSharpEdge\'s tools can be instrumental here, helping you automatically track your units and overall performance against your bankroll, giving you a clear picture of your profitability.\n\n### Avoiding Common Bankroll Management Mistakes\n\nEven with a plan, it\'s easy to fall into traps that can sabotage your bankroll.\n\n*   **Chasing Losses:** The most destructive mistake. After a losing bet, the urge to immediately place a larger bet to \"win it back\" is strong. This emotional response almost invariably leads to a larger, more devastating loss. *Never chase losses.* Stick to your staking plan.\n*   **Over-betting:** Risking too high a percentage of your bankroll on a single game, especially one you feel particularly confident about. Even \"sure things\" lose. One large loss can decimate a significant portion of your bankroll.\n*   **Emotional Betting:** Letting personal biases, excitement, or frustration dictate bet size or selection. Your bankroll management must be logical and systematic, not emotional.\n*   **Ignoring Variance:** Understanding that even with a positive edge, losing streaks happen. Don\'t abandon your strategy after a few bad beats. Trust the process.\n\n### Conclusion: Build a Solid Foundation for Your Betting Future with SharpEdge\n\nRobust bankroll management may not be the most glamorous aspect of sports betting, but it is undeniably the bedrock upon which all long-term profitability is built. It\'s the shield that protects your capital and the engine that allows your strategic edge to compound over time. Even the most accurate picks from SharpEdge, or your own brilliant analysis, can\'t overcome reckless bankroll practices.\n\nBy defining a dedicated bankroll, adhering to a disciplined staking strategy like fixed unit betting, and consciously avoiding common pitfalls, you equip yourself for sustainable success. SharpEdge is more than just a source of winning picks; it\'s an integrated platform designed to support your entire betting journey, including robust bankroll tracking and performance analysis.\n\n**Build a solid foundation for your betting future. Learn, manage, and win consistently. Unlock your full potential with SharpEdge today!**" },
+  { title: "Top 5 Mistakes New Bettors Make", excerpt: "Most bettors lose within 30 days. Here are the exact mistakes that kill bankrolls — and how to avoid every one.", content: "# Top 5 Mistakes New Sports Bettors Make (And How to Avoid Them) with SharpEdge\n\n**The world of sports betting is an exhilarating place.** The promise of turning your passion for sports into profit draws millions of new enthusiasts every year. The excitement, the strategic challenge, and the potential for big wins are undeniable. However, this initial enthusiasm often collides with a harsh reality: many new bettors quickly become disillusioned, losing money faster than they anticipated. The good news? This isn\'t usually due to a lack of talent or intelligence, but rather a tendency to fall into predictable traps. This article is your essential guide to identifying the most frequent pitfalls for new sports bettors and, crucially, providing actionable advice on how to avoid them. By sidestepping these common errors, you can significantly increase your chances of long-term success, and with SharpEdge, you have a powerful tool to guide you towards smart, sustainable practices.\n\n### Mistake 1: Betting with Emotion, Not Logic\n\n**Description:** This is perhaps the most common and destructive mistake. It manifests in various forms: betting on your favorite team regardless of the odds or matchup, \"chasing losses\" by placing larger, riskier bets after a string of defeats, or letting frustration and anger dictate your wagers.\n**Consequence:** Emotional betting leads to irrational decisions. It bypasses any form of strategic analysis, often resulting in significant financial losses that are easily preventable. You become reactive instead of proactive.\n**How to Avoid:**\n*   **Develop Discipline:** Treat sports betting like a business, not a hobby driven by feelings. Every bet should be a calculated decision.\n*   **Stick to a Pre-defined Strategy:** Establish clear criteria for placing bets and adhere to them rigorously.\n*   **Utilize Objective Data:** SharpEdge provides objective, data-driven insights that strip away emotional bias. Let the numbers and analytics inform your decisions, not your allegiances or fleeting frustrations.\n\n### Mistake 2: Poor Bankroll Management\n\n**Description:** Many new bettors treat their betting funds as disposable income, betting haphazardly without a structured approach. This includes betting too much on a single game, not having a dedicated \"bankroll\" separate from living expenses, or continuing to bet even when funds are critically low.\n**Consequence:** This is the fastest route to rapid depletion of funds, leading to financial stress, forced breaks from betting, or completely giving up. Without proper bankroll management, even a series of winning picks won\'t guarantee long-term profitability.\n**How to Avoid:**\n*   **Set a Strict Bankroll:** Dedicate a specific amount of money solely for betting – money you can afford to lose without impacting your life.\n*   **Implement a Unit-Based Staking Plan:** This is crucial. Decide on a \"unit\" size, typically 1% to 3% of your total bankroll. Every bet you place should be a fixed number of units (e.g., 1 unit, 0.5 units, 2 units). As your bankroll grows or shrinks, your unit size adjusts proportionally, protecting you during downswings and amplifying gains during upswings.\n*   **Never Chase Losses:** This is worth repeating. If you\'ve lost, accept it. Stick to your staking plan for the next bet. SharpEdge provides tools to help track your bets, units, and overall bankroll performance, making disciplined management easier.\n\n### Mistake 3: Ignoring Value\n\n**Description:** New bettors often focus solely on picking winners, looking for the team they believe *will* win, rather than finding bets that offer **genuine value** (i.e., where the bookmaker\'s odds imply a lower probability than your own assessment of the true probability).\n**Consequence:** You might win some bets, but if you\'re consistently betting at poor odds, your long-term profitability will suffer. Even a high win rate can be unprofitable if you\'re not getting good prices.\n**How to Avoid:**\n*   **Understand Value Betting:** Educate yourself on what value betting truly means (see our \"Ultimate Guide to Value Betting\" blog post). It\'s about finding situations where the market has mispriced an outcome.\n*   **Compare Odds:** Always shop around. Even small differences in odds across different bookmakers can significantly impact your long-term returns.\n*   **Leverage SharpEdge\'s Value Identification Tools:** SharpEdge\'s algorithms are specifically designed to scan the market for these valuable discrepancies, highlighting opportunities where the odds are in your favor.\n\n### Mistake 4: Lack of Research and Specialization\n\n**Description:** Betting based on hunches, media narratives, superficial analysis, or a general \"feeling\" about a game, without diving into the underlying data, team news, or contextual factors. Trying to bet on every sport and every league without specialized knowledge.\n**Consequence:** Making uninformed bets drastically reduces your probability of success. You\'re essentially guessing, and guessing rarely leads to consistent profit. Spreading yourself too thin means you become a master of none.\n**How to Avoid:**\n*   **Commit to Thorough Research:** Before every bet, investigate recent form, head-to-head records, injuries, suspensions, motivational factors, and advanced statistics.\n*   **Specialize in a Few Sports/Leagues:** Become an expert in 2-3 areas. This allows you to develop a deeper understanding and spot nuances that general bettors miss.\n*   **Use SharpEdge\'s Comprehensive Data and Analytics:** SharpEdge provides a wealth of data, analytical tools, and expert insights to streamline your research process, helping you make highly informed decisions quickly.\n\n### Mistake 5: Over-reliance on Parlays/Accumulators\n\n**Description:** The allure of turning a small stake into a massive payout through parlays (also known as accumulators) is incredibly strong for new bettors. They combine multiple selections into one bet, where all must win for the parlay to pay out.\n**Consequence:** While exciting, parlays have a significantly lower probability of hitting due to the compounding of probabilities (e.g., if you have 4 selections, each with a 50% chance, the parlay\'s chance is 0.5\\\\*0.5\\\\*0.5\\\\*0.5 = 6.25%). For most bettors, especially new ones, parlays are low-Expected Value (EV) bets that drain bankrolls quickly.\n**How to Avoid:**\n*   **Focus on Single Bets for Consistent Profit:** The most successful long-term bettors focus on finding value in single bets.\n*   **Use Parlays Sparingly and with Small Stakes:** If you enjoy the thrill of parlays, treat them as entertainment. Bet very small amounts and understand the inherent high risk. Never include them as a core part of your disciplined betting strategy.\n\n### Conclusion: Learn from the Best, Avoid the Worst. Start Your Winning Journey with SharpEdge Today!\n\nEntering the world of sports betting can be incredibly rewarding, but it requires a strategic and disciplined approach. By consciously avoiding these five common mistakes – betting with emotion, poor bankroll management, ignoring value, lack of research, and over-reliance on parlays – you lay a solid foundation for long-term success.\n\nRemember, discipline, a well-defined strategy, and objective data are your best allies. SharpEdge isn\'t just a platform; it\'s an essential partner, providing the cutting-edge analytics, value identification, and bankroll tracking tools that both new and experienced bettors need to thrive.\n\n**Learn from the best, avoid the worst. Stop making common errors and start your winning journey with SharpEdge today!**" },
+  { title: "UFC Betting Strategy", excerpt: "Books are terrible at pricing MMA. Here's how to exploit that edge every fight week.", content: "# UFC Betting Strategy: Dominating the Octagon with Smart Picks (with SharpEdge)\n\n**The explosive growth of the Ultimate Fighting Championship (UFC) has transformed combat sports into a global phenomenon.** With its electrifying knockouts, stunning submissions, and incredible displays of athleticism, it\'s no surprise that UFC betting has captivated audiences worldwide. However, unlike team sports, UFC betting presents a unique set of complexities. It\'s less about collective strategy and more about the intricate dynamics between two individuals, where a single punch or submission attempt can alter the entire trajectory of a fight and, consequently, your wager. To truly profit from this high-impact sport, you need a nuanced approach. This article will arm you with strategic insights for profitable UFC betting and introduce you to SharpEdge, your indispensable tool for dominating the Octagon with smart picks.\n\n### Understanding UFC Dynamics: Beyond the Hype\n\nUFC betting stands apart due to its highly individualized nature. While team sports involve numerous players and variables, a UFC fight boils down to two athletes, each bringing a unique skill set, physical condition, and mental fortitude into the cage. This fewer-variables, higher-impact dynamic means that a deep dive into individual fighter analysis is paramount.\n\nKey metrics to consider go beyond simple win-loss records:\n\n*   **Fight History:** Not just who they fought, but how they won or lost.\n*   **Physical Attributes:** Reach, height, weight class transition history.\n*   **Recent Activity:** Layoffs, back-to-back fights, changes in camps.\n*   **Opponent Quality:** Was their last win against a top contender or a journeyman?\n\nUnderstanding these unique dynamics is the first step towards profitable UFC betting.\n\n### Strategy 1: The Art of Fighter Style Matchups\n\nIn the UFC, the adage \"styles make fights\" couldn\'t be truer. The interaction between two distinct fighting styles is often the most critical factor in determining the outcome.\n\n*   **Striker vs. Grappler:** Can the grappler close the distance and take the fight to the mat, or will the striker maintain range and pick them apart?\n*   **Pressure Fighter vs. Counter-Striker:** Will the pressure fighter overwhelm their opponent, or will they walk into well-timed counters?\n*   **Technical Striker vs. Brawler:** Can the brawler land a fight-ending shot, or will the technical striker utilize footwork and precision?\n\nAnalyzing how these styles clash, and which fighter holds the advantage in their preferred domain, is crucial. Does the grappler have excellent takedowns and top control, or does their opponent have iron-clad takedown defense? Does the striker have good head movement, or do they tend to get hit?\n\n**SharpEdge\'s Ability:** Our platform excels at parsing vast amounts of fighter data, including striking accuracy, takedown success rates, submission defense, and more. This allows us to predict outcomes based on the probabilities of one fighter imposing their will or exploiting their opponent\'s weaknesses in specific stylistic matchups.\n\n### Strategy 2: Recent Form, Training Camps, and the Unseen Variables\n\nWhile records provide a historical overview, recent form and information from training camps offer invaluable, often overlooked, insights.\n\n*   **Recent Performance Assessment:** Don\'t just glance at the last fight result. How did they look? Were they dominant, or did they barely scrape by? What was the quality of their recent opponents? A fighter coming off a strong win against a top-ranked opponent is in a different position than one who beat a lower-tier fighter.\n*   **Training Camp News:** This \"soft\" data can be a goldmine. Keep an ear to the ground for:\n    *   **Injuries:** Even minor training camp injuries can severely impact performance.\n    *   **Weight Cut Issues:** A difficult weight cut can drain a fighter\'s energy and chin.\n    *   **Coaching Changes:** New coaches can bring new strategies or disrupt established routines.\n    *   **Motivation:** Is a fighter dealing with personal issues? Are they fighting for a new contract, or perhaps on their last fight?\n\nThis qualitative data, when combined with SharpEdge\'s robust statistical analysis, paints a far more complete picture, helping you identify true value that the public (and even bookmakers) might miss.\n\n### Strategy 3: Unlocking Value in Prop Bets and Round Totals\n\nWhile moneyline bets (picking the winner) are straightforward, significant value often hides in **prop bets** and **round totals**.\n\n*   **Method of Victory (MOV):** Instead of just picking who wins, predict *how* they win – by KO/TKO, Submission, or Decision. For example, if a dominant grappler is facing a striker with poor takedown defense, a \"win by submission\" prop bet might offer more value than a simple moneyline wager, even if the moneyline is also favorable.\n*   **Round Totals (Over/Under):** Betting on whether the fight will go over or under a specified number of rounds (e.g., Over 1.5 Rounds). This is particularly useful when you have a strong read on a fighter\'s finishing ability or durability.\n\nSharpEdge is adept at highlighting discrepancies in these secondary markets. Our models, by accurately predicting fight length and likely finishing sequences, can expose where the odds for specific methods of victory or round totals are skewed, allowing you to capitalize on mispriced lines.\n\n### Key Factors to Analyze Before Every Fight\n\nTo ensure your UFC betting strategy is comprehensive, always consider these factors:\n\n1.  **Physical Attributes:** Beyond reach and height, assess how a fighter\'s body type impacts their style. A fighter with a long reach might excel at striking from distance, while a shorter, stockier fighter might thrive in the clinch.\n2.  **Statistical Data:** Delve into numbers like significant strikes landed per minute (SLpM) vs. absorbed per minute (SApM), takedown accuracy (TD Acc.), takedown defense (TD Def.), and control time. These statistics paint a picture of a fighter\'s offensive and defensive effectiveness.\n3.  **Mental Game:** Does the fighter have a history of fighting well under pressure? Can they bounce back from adversity? How durable is their chin? These less quantifiable aspects can be critical in a sport where one moment of mental lapse can be decisive.\n\n### Conclusion: Step into the Cage Prepared with SharpEdge\n\nSuccessful UFC betting is far from a random guess. It\'s about deep analytical work, a keen understanding of fighter styles and dynamics, and the strategic exploitation of various bet types. By meticulously analyzing style matchups, assessing recent form and training camp insights, and intelligently leveraging prop bets, you can carve out a significant edge.\n\nSharpEdge isn\'t just a platform; it\'s your corner team in the high-stakes world of UFC betting. We provide the advanced analytics, real-time data, and predictive models you need to make informed, profitable decisions. Stop letting the Octagon\'s unpredictability dictate your results.\n\n**Step into the cage prepared. Unlock winning UFC bets with SharpEdge – your ultimate fighting advantage!**" },
+  { title: "The Ultimate Guide to Value Betting", excerpt: "Value betting is the only strategy that works long-term. Here's the complete playbook.", content: "# The Ultimate Guide to Value Betting in Sports: Find Your Edge with SharpEdge\n\n**For many, sports betting is a game of chance, a fleeting thrill where luck reigns supreme.** The reality, however, is far more strategic. While luck can play a role in any single outcome, consistent long-term profitability in sports betting hinges on a fundamental concept: **value betting**. This isn\'t about predicting every winner; it\'s about understanding and exploiting inefficiencies in the market. If you\'re tired of treating betting like a lottery and want to approach it with a professional mindset, this ultimate guide will demystify value betting and show you how SharpEdge empowers you to find your true edge.\n\n### What is Value Betting? A Professional\'s Secret\n\nAt its core, value betting occurs when **your assessed probability of an event happening is higher than the probability implied by the bookmaker\'s odds**. In simpler terms, you\'re getting better odds than you \"should\" for a particular outcome.\n\nThink of it like this: a bookmaker offers 2.50 odds (which implies a 40% chance) on a team to win. However, after your thorough analysis, you calculate that the team actually has a 50% chance of winning. This disparity means the bookmaker has *underpriced* that outcome, and you\'ve found a value bet.\n\nIt’s crucial to understand that value betting is **not about picking winners** in the short term. Any given value bet might still lose. Instead, it\'s about **picking good prices**. Over a large sample size of value bets, the mathematical edge will compound, leading to long-term profit. This approach transforms betting from a gamble into an investment, much like buying a stock for less than its intrinsic value in the financial markets.\n\n### How to Identify Value Bets: The SharpEdge Advantage\n\nIdentifying value bets is the cornerstone of professional sports betting. It requires a combination of deep understanding, meticulous research, and powerful analytical tools.\n\n1.  **Manual Research and Expert Knowledge:**\n    This involves going beyond surface-level statistics. Dive into:\n    *   **Team and Player Form:** Not just wins and losses, but underlying performance metrics.\n    *   **Injuries and Suspensions:** How do key absences impact a team\'s strength?\n    *   **Head-to-Head Records:** Does one team consistently perform well against another?\n    *   **Motivational Factors:** Cup final vs. dead rubber game; relegation battle vs. mid-table security.\n    *   **Situational Factors:** Travel fatigue, crowded schedules, home-field advantage.\n    The goal is to develop a more accurate understanding of the real probabilities than the bookmakers.\n\n2.  **Statistical Models and True Probabilities:**\n    Advanced bettors often employ mathematical models to calculate their own \"true\" probabilities for various outcomes. These models factor in a myriad of data points to generate an unbiased likelihood. You then compare these calculated probabilities with the bookmaker\'s implied probabilities to spot discrepancies. This process can be incredibly complex and time-consuming.\n\n3.  **SharpEdge\'s Role: Automating Your Edge:**\n    This is where SharpEdge becomes an indispensable tool. Our platform automates and simplifies this complex analysis, acting as your personal data scientist. SharpEdge leverages:\n    *   **Advanced Algorithms:** Continuously scanning thousands of markets and millions of data points across multiple sports.\n    *   **Proprietary Statistical Models:** Our models are designed to identify where bookmakers have mispriced odds by calculating highly accurate true probabilities.\n    *   **Clear Value Opportunities:** SharpEdge presents these value bets in an easily digestible format, highlighting exactly where the edge lies. We cut through the noise, allowing you to focus on profitable decisions rather than endless data crunching.\n\n### The Math Behind Value: Understanding Expected Value (EV)\n\nThe concept of **Expected Value (EV)** is fundamental to value betting. EV quantifies the average outcome of a bet if it were placed an infinite number of times. A bet with a **Positive Expected Value (+EV)** means that, on average, you can expect to profit from it over the long run.\n\nThe simplified formula for Expected Value (for a single outcome) is:\n\n`EV = (Probability of Winning * Payout per Win) - (Probability of Losing * Stake per Loss)`\n\n**Example:**\n*   You bet £10 on a team at odds of 2.50.\n*   Your calculated probability of winning is 50% (0.50).\n*   Bookmaker\'s implied probability is 40% (1 / 2.50).\n\n`EV = (0.50 * £15 profit) - (0.50 * £10 loss)`\n`EV = £7.50 - £5.00`\n`EV = +£2.50`\n\nThis means, for every £10 you place on this type of bet, you can expect to gain £2.50 in the long run. Consistently finding and betting on +EV opportunities is the direct path to sustainable profit in sports betting.\n\n### Developing Your Own Edge: Specialization and Refinement\n\nEven with tools like SharpEdge, cultivating your own edge further enhances your profitability:\n\n*   **Specialize in Niche Markets:** Become an expert in a specific league, sport, or even a particular betting market (e.g., corner bets, player props in a certain sport). Your concentrated knowledge will allow you to spot nuances that general market makers might miss.\n*   **Refine Your Probabilities:** Use SharpEdge\'s data visualization and analytical tools to understand *why* certain bets are deemed valuable. Over time, this helps you develop a sharper intuition and potentially refine your own probability assessments.\n*   **Learn from Experience:** Track your bets meticulously. Analyze your wins and losses to understand what factors you might be overlooking or overemphasizing.\n\n### Common Pitfalls and How to Avoid Them\n\nEven seasoned bettors can fall prey to common errors:\n\n*   **Misjudging Probabilities:** Overestimating your own assessment of a team\'s chance or underestimating the bookmaker\'s accuracy. This is why a tool like SharpEdge is vital – it provides an objective, data-backed assessment.\n*   **Falling for \"Public Money\" Biases:** Following the crowd or betting on popular teams can often lead to betting on outcomes where the value has been eroded by public perception.\n*   **Lack of Discipline in Staking and Bankroll Management:** Finding value is useless if you bet too much on a single game or chase losses. Stick to a consistent staking plan (e.g., 1-3% of your bankroll per bet). SharpEdge\'s bankroll management features help you maintain this discipline.\n*   **Confirmation Bias:** Only seeking out information that confirms your initial lean, ignoring contradictory data.\n\n### Conclusion: Stop Guessing, Start Profiting with SharpEdge\n\nValue betting is not a get-rich-quick scheme; it\'s a long-term strategy that demands discipline, analytical rigor, and patience. It\'s the cornerstone of how professional sports bettors achieve consistent profitability.\n\nSharpEdge is more than just a betting platform; it\'s your essential partner in this journey. By providing powerful algorithms, real-time data, and clear value indicators, we empower you to move beyond mere speculation and into the realm of informed, strategic decision-making. Stop relying on luck or gut feelings.\n\n**Discover true value and start profiting consistently. Unlock your edge with SharpEdge today!**" },
+  { title: "Best Sports Betting Picks 2026", excerpt: "The sharpest picks, the best edge, the real data. How SharpEdge finds value before the books adjust.", content: "# Best Sports Betting Picks 2026: Your Winning Edge with SharpEdge\n\n**Are you ready to transform your sports betting strategy and unlock consistent wins?** The thrill of sports betting is undeniable, but the desire to win big often comes with the frustration of unpredictable outcomes. In the dynamic world of sports, simply following your gut isn\'t enough. As we look ahead to 2026, the landscape of sports betting is evolving, demanding a more sophisticated approach. This article will not only equip you with top picks for the year but will introduce you to SharpEdge, the ultimate tool designed to empower your decisions and give you a definitive winning edge.\n\n### The Evolving Landscape of Sports Betting in 2026\n\nThe year 2026 promises a spectacular array of major sporting events that will captivate audiences and offer immense betting opportunities. From the fever pitch of **World Cup qualifiers** to the intensity of various **major championships** across different sports, the stakes will be higher than ever. But beyond the traditional match outcomes, 2026 will see further entrenchment of evolving betting trends. Expect to see an increased focus on **in-play betting**, allowing you to react in real-time to game developments. **Prop bets** will continue to diversify, offering unique opportunities to wager on specific player performances or game incidents. Most significantly, **data analytics** will no longer be a niche; it will be the cornerstone of successful betting. Staying ahead in this rapidly changing environment requires not just passion, but reliable, data-driven information.\n\n### SharpEdge\'s Methodology for 2026 Picks: Precision Meets Prediction\n\nAt SharpEdge, we understand that true success in sports betting is built on a foundation of rigorous analysis, not mere speculation. Our methodology for generating top picks for 2026 is rooted in a powerful combination of **advanced algorithms, extensive historical data, and expert analysis**. We eschew the reliance on gut feelings, instead championing **data-driven predictions** that offer a quantifiable edge.\n\nOur sophisticated system meticulously analyzes a multitude of factors, ensuring every pick is thoroughly vetted. Key considerations include:\n\n*   **Team Performance Trends:** We delve deep into recent form, underlying statistics, and performance against various types of opposition.\n*   **Player Statistics and Form:** Individual player metrics, including fitness, recent output, and historical performance in similar matchups, are critically assessed.\n*   **Injury Reports and Suspensions:** The availability of key players can dramatically shift outcomes, and our system integrates up-to-the-minute information.\n*   **Head-to-Head Records:** Historical matchups between teams and players often reveal patterns and psychological edges.\n*   **Situational Factors:** Home/away advantage, travel fatigue, coaching changes, and motivational aspects are all factored into our comprehensive models.\n\nThis meticulous, multi-faceted approach allows SharpEdge to provide you with picks that are not only statistically sound but also reflective of the nuanced realities of competitive sports.\n\n### Top Sports to Watch for Profitable Bets in 2026\n\nWhile opportunities exist across the sporting spectrum, certain sports and leagues consistently offer more fertile ground for profitable betting, especially when armed with SharpEdge’s insights. In 2026, keep a keen eye on:\n\n*   **Premier League Football (Soccer):** Known for its intense competition and frequent upsets, the Premier League, when analyzed correctly, offers consistent value. SharpEdge\'s models can cut through the noise, identifying underestimated teams or overvalued favorites.\n*   **NBA Playoffs:** The NBA playoffs are a marathon of high-stakes basketball where momentum shifts, player matchups, and fatigue play crucial roles. SharpEdge excels at dissecting these dynamics, providing insights into series outcomes, individual game totals, and player props.\n*   **Major Tennis Grand Slams:** Individual sports like tennis often present clearer analytical paths. SharpEdge’s detailed player form analysis, surface preferences, and head-to-head records are invaluable for finding an edge in Grand Slam events.\n*   **NFL Season:** With its immense popularity, the NFL generates vast betting volume, which can create inefficiencies in the market. SharpEdge\'s advanced statistical models are adept at exploiting these, offering smart picks against the spread and on totals.\n\nThese examples merely scratch the surface. SharpEdge\'s technology is versatile, designed to unearth value wherever it lies, making these sports, and many others, a goldmine for informed bettors.\n\n### Actionable Tips for Maximizing Your Winnings\n\nReceiving top-tier picks from SharpEdge is just the beginning. To truly maximize your winnings and cultivate a sustainable betting career, you must actively engage with the information and adopt disciplined practices.\n\n1.  **Understand the Reasoning:** Don\'t just blindly follow a pick. Take the time to understand the data and analysis SharpEdge provides. This builds your own intuition and reinforces learning.\n2.  **Master Bankroll Management:** This cannot be overstated. Dedicate a specific amount of money solely for betting (your bankroll) and stick to a consistent staking plan (e.g., betting 1-2% of your bankroll per wager). Even the best picks can\'t save a poorly managed bankroll. SharpEdge can help you track your performance and manage your units effectively.\n3.  **Utilize All SharpEdge Features:** Beyond the picks, leverage our comprehensive tools. Compare odds across multiple bookmakers to ensure you\'re always getting the best price. Set up real-time alerts for significant odds movements or game-changing news. Explore our analytical dashboards to deepen your understanding.\n4.  **Shop for the Best Lines:** Even a slight difference in odds can significantly impact your long-term profitability. Always check multiple sportsbooks for the best available line on your chosen pick.\n\n### Conclusion: Your Future in Sports Betting Starts with SharpEdge\n\nThe world of sports betting is challenging, but with the right tools and strategies, it\'s incredibly rewarding. SharpEdge stands as your premier partner, transforming the complex art of sports prediction into a precise science. Our platform, powered by advanced analytics and a commitment to data-driven insights, is engineered to give you a continuous winning edge in 2026 and beyond.\n\nStop leaving your success to chance. Embrace the future of sports betting. Join SharpEdge today and gain unparalleled insights that will not only improve your picks but fundamentally transform your entire betting strategy.\n\n**Sign up today and unlock your winning potential with SharpEdge!**" }
+];
+
+// ═══════════════════════════════════════════════
+//  BLOG / RESOURCES SYSTEM
+// ═══════════════════════════════════════════════
+function mdToHtml(md) {
+  var h = md
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/^### (.+)$/gm,'<h3 class="bh3">$1</h3>')
+    .replace(/^## (.+)$/gm,'<h2 class="bh2">$1</h2>')
+    .replace(/^# (.+)$/gm,'<h1 class="bh1">$1</h1>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong class="bgold">$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em class="btext2">$1</em>')
+    .replace(/^---+$/gm,'<hr class="bhr">')
+    .replace(/^\* (.+)$/gm,'<li class="bli">$1</li>')
+    .replace(/(<li[^>]*>[\s\S]*?<\/li>\n?)+/g,'<ul class="bul">$&</ul>');
+  h = h.replace(/^(?!<[hHuUlU]).+$/gm,function(l){return l.trim()?'<p class="bp">'+l+'</p>':'';});
+  return h;
+}
+
+function renderBlogs() {
+  var grid = document.getElementById('blog-grid-container');
+  if (!grid || !window.BLOGS) return;
+  var icons = {
+    chart:'<path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>',
+    trophy:'<path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>',
+    brain:'<path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>',
+    money:'<path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>',
+    warning:'<path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>',
+    ufc:'<path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>',
+    trending:'<path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>'
+  };
+  var chevron = '<path d="M9 5l7 7-7 7"/>';
+  grid.innerHTML = window.BLOGS.map(function(b,i){
+    var ic = icons[b.icon]||icons.chart;
+    return '<div class="blog-card" onclick="openBlogModal('+i+')">'
+      +'<div style="display:flex;align-items:flex-start;gap:0.75rem;">'
+      +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:22px;height:22px;flex-shrink:0;color:var(--gold);margin-top:2px;">'+ic+'</svg>'
+      +'<div style="flex:1;">'
+      +'<div style="font-size:0.9rem;font-weight:600;color:var(--text1);margin-bottom:0.3rem;line-height:1.3;">'+b.title+'</div>'
+      +'<div style="font-size:0.75rem;color:var(--text3);line-height:1.5;">'+b.excerpt+'</div>'
+      +'</div>'
+      +'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px;flex-shrink:0;color:var(--text3);margin-top:4px;">'+chevron+'</svg>'
+      +'</div>'
+      +'<div style="margin-top:0.6rem;font-size:0.6rem;font-family:var(--mono);color:var(--gold);letter-spacing:1px;opacity:0.7;">READ FULL GUIDE →</div>'
+      +'</div>';
+  }).join('');
+}
+
+function openBlogModal(idx) {
+  var b = window.BLOGS[idx];
+  var modal = document.getElementById('blog-modal');
+  var content = document.getElementById('blog-modal-content');
+  content.innerHTML = mdToHtml(b.content);
+  content.scrollTop = 0;
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeBlogModal() {
+  document.getElementById('blog-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+renderBlogs();</script>
+</body>
+</html>
+
