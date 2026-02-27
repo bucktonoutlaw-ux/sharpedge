@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1978,17 +1978,31 @@ async function fetchLivePicks() {
         let spread = odds?.details || null;
         let overUnder = odds?.overUnder || null;
 
-        // If no ESPN odds, estimate based on records
+        // Estimate moneyline from spread if not available
         if (!homeML) {
-          const homeW = parseInt(home.records?.[0]?.summary?.split('-')[0]) || 0;
-          const homeL = parseInt(home.records?.[0]?.summary?.split('-')[1]) || 1;
-          const awayW = parseInt(away.records?.[0]?.summary?.split('-')[0]) || 0;
-          const awayL = parseInt(away.records?.[0]?.summary?.split('-')[1]) || 1;
-          const homeWinPct = homeW / (homeW + homeL);
-          const awayWinPct = awayW / (awayW + awayL);
-          // Convert win% to moneyline estimate
-          homeML = homeWinPct > 0.5 ? -Math.round((homeWinPct / (1 - homeWinPct)) * 100) : Math.round(((1 - homeWinPct) / homeWinPct) * 100);
-          awayML = awayWinPct > 0.5 ? -Math.round((awayWinPct / (1 - awayWinPct)) * 100) : Math.round(((1 - awayWinPct) / awayWinPct) * 100);
+          const spreadNum = parseFloat(spread) || 0;
+          // Convert spread to win probability (each point ~ 3.3% in NBA)
+          const favProb = Math.min(0.85, Math.max(0.5, 0.5 + Math.abs(spreadNum) * 0.033));
+          const dogProb = 1 - favProb;
+          if (spreadNum < 0) {
+            // home is favorite
+            homeML = -Math.round((favProb / dogProb) * 100);
+            awayML = Math.round((favProb / dogProb) * 100);
+          } else if (spreadNum > 0) {
+            // away is favorite
+            awayML = -Math.round((favProb / dogProb) * 100);
+            homeML = Math.round((favProb / dogProb) * 100);
+          } else {
+            // pick em - use records
+            const homeW = parseInt(home.records?.[0]?.summary?.split('-')[0]) || 15;
+            const homeL = parseInt(home.records?.[0]?.summary?.split('-')[1]) || 15;
+            const awayW = parseInt(away.records?.[0]?.summary?.split('-')[0]) || 15;
+            const awayL = parseInt(away.records?.[0]?.summary?.split('-')[1]) || 15;
+            const hPct = homeW / (homeW + homeL);
+            const aPct = awayW / (awayW + awayL);
+            homeML = hPct > 0.5 ? -Math.round((hPct/(1-hPct))*100) : Math.round(((1-hPct)/hPct)*100);
+            awayML = aPct > 0.5 ? -Math.round((aPct/(1-aPct))*100) : Math.round(((1-aPct)/aPct)*100);
+          }
         }
 
         const { trueHome, trueAway } = calcEdge(homeML, awayML);
