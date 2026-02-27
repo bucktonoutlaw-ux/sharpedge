@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -2313,36 +2313,37 @@ function trackPickBet(idx, evt) {
   if (evt) evt.stopPropagation();
   const p = PICKS_DATA[idx];
   if (!p) return showToast('Pick not found.', 'error');
-
-  // Default stake = 1% of bankroll
   const defaultStake = (state.bankroll * 0.01).toFixed(2);
-  const stakeInput = prompt('Stake amount for:\n' + p.pick + ' ' + p.odds + '\n\nDefault: $' + defaultStake, defaultStake);
-  if (stakeInput === null) return;
-  const stake = parseFloat(stakeInput);
-  if (isNaN(stake) || stake <= 0) return showToast('Invalid stake.', 'error');
-
-  const bet = {
-    status: 'pending',
-    desc: p.pick,
-    matchup: p.matchup,
-    sport: p.sport,
-    pick: p.pick,
-    odds: p.odds,
-    stake,
-    profit: 0,
-    date: new Date().toLocaleDateString(),
-    gameId: p.gameId || null,
-    overUnder: p.overUnder || null,
-    homeTeam: p.homeTeam || '',
-    awayTeam: p.awayTeam || '',
-    espnSport: p.espnSport || ''
+  // Show mobile-friendly modal instead of prompt()
+  document.getElementById('track-modal-pick').textContent = p.pick + ' ' + p.odds + ' @ ' + p.book;
+  document.getElementById('track-modal-stake').value = defaultStake;
+  document.getElementById('track-modal').style.display = 'flex';
+  document.getElementById('track-modal-confirm').onclick = function() {
+    const stake = parseFloat(document.getElementById('track-modal-stake').value);
+    if (isNaN(stake) || stake <= 0) return showToast('Enter a valid stake.', 'error');
+    const bet = {
+      status: 'pending',
+      desc: p.pick,
+      matchup: p.matchup,
+      sport: p.sport,
+      pick: p.pick,
+      odds: p.odds,
+      stake,
+      profit: 0,
+      date: new Date().toLocaleDateString(),
+      gameId: p.gameId || null,
+      overUnder: p.overUnder || null,
+      homeTeam: p.homeTeam || '',
+      awayTeam: p.awayTeam || '',
+      espnSport: p.espnSport || ''
+    };
+    state.bets.unshift(bet);
+    saveState();
+    updateBankrollDisplay();
+    renderBetLog();
+    document.getElementById('track-modal').style.display = 'none';
+    showToast('Bet tracked! Auto-resolves when game ends.', 'success');
   };
-
-  state.bets.unshift(bet);
-  saveState();
-  updateBankrollDisplay();
-  renderBetLog();
-  showToast('Bet tracked! Auto-resolves when game ends.', 'success');
 }
 function logWin() {
   const desc = document.getElementById('bet-desc').value.trim();
@@ -2532,6 +2533,16 @@ function closeBlogModal() {
 }
 
 renderBlogs();</script>
+<div id="track-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;align-items:center;justify-content:center;padding:1.5rem;">
+  <div style="background:#141414;border:1px solid #2a2a2a;border-radius:4px;padding:1.5rem;width:100%;max-width:360px;">
+    <div style="font-family:var(--head);font-size:1.4rem;font-weight:900;color:#f0f0f0;text-transform:uppercase;margin-bottom:0.5rem;">Track This Bet</div>
+    <div id="track-modal-pick" style="font-family:var(--mono);font-size:0.75rem;color:#00d084;margin-bottom:1.25rem;"></div>
+    <label style="font-family:var(--mono);font-size:0.65rem;color:#888;letter-spacing:0.12em;text-transform:uppercase;display:block;margin-bottom:0.4rem;">Stake Amount ($)</label>
+    <input id="track-modal-stake" type="number" min="1" step="0.01" style="width:100%;background:#0e0e0e;border:1px solid #2a2a2a;color:#f0f0f0;padding:0.9rem 1rem;font-family:var(--mono);font-size:1rem;border-radius:2px;outline:none;margin-bottom:1rem;" />
+    <button id="track-modal-confirm" style="width:100%;padding:0.9rem;background:#f5c842;color:#080808;border:none;font-family:var(--head);font-size:1.1rem;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;border-radius:2px;cursor:pointer;margin-bottom:0.5rem;">CONFIRM BET</button>
+    <button onclick="document.getElementById('track-modal').style.display='none'" style="width:100%;padding:0.7rem;background:transparent;border:1px solid #2a2a2a;color:#888;font-family:var(--mono);font-size:0.75rem;border-radius:2px;cursor:pointer;">CANCEL</button>
+  </div>
+</div>
 </body>
 </html>
 
