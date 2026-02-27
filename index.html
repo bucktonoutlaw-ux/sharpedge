@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1996,8 +1996,8 @@ async function fetchLivePicks() {
           // Get odds
           const oddsList = comp.odds || [];
           const o = oddsList[0] || {};
-          let homeML = o.homeTeamOdds?.moneyLine || null;
-          let awayML = o.awayTeamOdds?.moneyLine || null;
+          let homeML = o.moneyline?.home?.close?.odds ?? o.moneyline?.home?.open?.odds ?? o.homeTeamOdds?.moneyLine ?? null;
+          let awayML = o.moneyline?.away?.close?.odds ?? o.moneyline?.away?.open?.odds ?? o.awayTeamOdds?.moneyLine ?? null;
 
           // Estimate from records if no odds
           if (!homeML || !awayML) {
