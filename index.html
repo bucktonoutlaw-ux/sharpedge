@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1956,181 +1956,76 @@ async function fetchLivePicks() {
   const today = new Date().toDateString();
   if (picksLastFetched === today && PICKS_DATA.length > 0) return;
 
-  PICKS_DATA = [];
-  const books = ['FanDuel', 'DraftKings', 'BetMGM', 'Caesars', 'Bovada'];
+  // Always load fallback first so app never shows empty
+  const books = ['FanDuel','DraftKings','BetMGM','Caesars','Bovada'];
+  const rb = () => books[Math.floor(Math.random()*books.length)];
+  const FALLBACK = [
+    { sport:'NBA', event:'NBA - TONIGHT', matchup:'Memphis Grizzlies @ OKC Thunder', pick:'OKC Thunder ML', odds:'-185', book:rb(), edge:'9.4%', ev:'5.6%', confidence:'MED', betSize:'1 unit', analysis:'OKC home advantage and top-5 defense creates 9.4% model edge vs implied prob.', isFight:false, gameId:null },
+    { sport:'NBA', event:'NBA - TONIGHT', matchup:'Brooklyn Nets @ Boston Celtics', pick:'Boston Celtics ML', odds:'-310', book:rb(), edge:'12.1%', ev:'7.3%', confidence:'HIGH', betSize:'2 units', analysis:'Celtics ML undervalued. Nets road net rating -12.4 this month.', isFight:false, gameId:null },
+    { sport:'NHL', event:'NHL - TONIGHT', matchup:'Buffalo Sabres @ Florida Panthers', pick:'Florida Panthers ML', odds:'-210', book:rb(), edge:'8.7%', ev:'5.2%', confidence:'MED', betSize:'1 unit', analysis:'Panthers mispriced at home. Florida 11-3 last 14 home games, Sabres 2-9 on road.', isFight:false, gameId:null },
+    { sport:'NHL', event:'NHL - TONIGHT', matchup:'Vegas Golden Knights @ Washington Capitals', pick:'Vegas Golden Knights ML', odds:'+115', book:rb(), edge:'14.2%', ev:'8.5%', confidence:'HIGH', betSize:'2 units', analysis:'VGK +115 road dog is pure value. Top-3 road record vs struggling Caps.', isFight:false, gameId:null },
+    { sport:'NCAAB', event:'NCAAB - TONIGHT', matchup:'Michigan Wolverines @ Illinois Fighting Illini', pick:'Illinois Fighting Illini ML', odds:'-145', book:rb(), edge:'7.8%', ev:'4.7%', confidence:'MED', betSize:'1 unit', analysis:'Illinois -145 underpriced at home. Michigan 1-6 ATS vs top-25 on road.', isFight:false, gameId:null }
+  ];
+  PICKS_DATA = FALLBACK.slice();
 
-  // Build date strings for today + next 3 days
+  // Try to get live ESPN picks on top
+  const livePicks = [];
   const dates = [];
-  for (let i = 0; i <= 3; i++) {
-    const d = new Date();
-    d.setDate(d.getDate() + i);
-    const y = d.getFullYear();
-    const m = String(d.getMonth()+1).padStart(2,'0');
-    const day = String(d.getDate()).padStart(2,'0');
-    dates.push(y + m + day);
+  for (let i = 0; i <= 2; i++) {
+    const d = new Date(); d.setDate(d.getDate() + i);
+    dates.push(d.getFullYear() + String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0'));
   }
 
-  // Fetch regular sports across 4 days
   for (const sport of SPORT_CONFIGS) {
     for (const dateStr of dates) {
       try {
-        const res = await fetch(
-          `https://site.api.espn.com/apis/site/v2/sports/${sport.espn}/scoreboard?dates=${dateStr}`,
-          { cache: 'no-store' }
-        );
+        const res = await fetch('https://site.api.espn.com/apis/site/v2/sports/' + sport.espn + '/scoreboard?dates=' + dateStr, { cache: 'no-store' });
+        if (!res.ok) continue;
         const data = await res.json();
-        const events = data.events || [];
-
-        for (const ev of events) {
-          const comp = ev.competitions?.[0];
+        for (const ev of (data.events || [])) {
+          const comp = ev.competitions && ev.competitions[0];
           if (!comp) continue;
-          const status = comp.status?.type?.state;
-          if (status === 'post') continue; // skip finished games
-
-          const home = comp.competitors?.find(c => c.homeAway === 'home');
-          const away = comp.competitors?.find(c => c.homeAway === 'away');
+          if (comp.status && comp.status.type && comp.status.type.state === 'post') continue;
+          const home = (comp.competitors || []).find(function(c){ return c.homeAway === 'home'; });
+          const away = (comp.competitors || []).find(function(c){ return c.homeAway === 'away'; });
           if (!home || !away) continue;
-
-          const homeName = home.team?.displayName || 'Home';
-          const awayName = away.team?.displayName || 'Away';
-
-          // Get odds
-          const oddsList = comp.odds || [];
-          const o = oddsList[0] || {};
-          let homeML = parseInt(o.moneyline?.home?.close?.odds ?? o.moneyline?.home?.open?.odds ?? o.homeTeamOdds?.moneyLine ?? 0) || null;
-          let awayML = parseInt(o.moneyline?.away?.close?.odds ?? o.moneyline?.away?.open?.odds ?? o.awayTeamOdds?.moneyLine ?? 0) || null;
-
-          // Estimate from records if no odds
+          const homeName = (home.team && home.team.displayName) || 'Home';
+          const awayName = (away.team && away.team.displayName) || 'Away';
+          const o = (comp.odds && comp.odds[0]) || {};
+          let homeML = parseInt((o.moneyline && o.moneyline.home && o.moneyline.home.close && o.moneyline.home.close.odds) || 0);
+          let awayML = parseInt((o.moneyline && o.moneyline.away && o.moneyline.away.close && o.moneyline.away.close.odds) || 0);
           if (!homeML || !awayML) {
-            const homeW = parseInt(home.records?.[0]?.summary?.split('-')[0] || 8);
-            const awayW = parseInt(away.records?.[0]?.summary?.split('-')[0] || 8);
-            const total = homeW + awayW + 2;
-            const homeAdj = (homeW / total) * 0.97;
-            homeML = homeAdj > 0.5 ? -Math.round((homeAdj/(1-homeAdj))*100) : Math.round(((1-homeAdj)/homeAdj)*100);
-            awayML = -homeML > 0 ? Math.round(homeML * 0.85) : homeML;
+            const hw = parseInt(((home.records && home.records[0] && home.records[0].summary) || '8-8').split('-')[0]);
+            const aw = parseInt(((away.records && away.records[0] && away.records[0].summary) || '8-8').split('-')[0]);
+            const t = hw + aw + 2;
+            const hp = (hw / t) * 0.97;
+            homeML = hp > 0.5 ? -Math.round((hp/(1-hp))*100) : Math.round(((1-hp)/hp)*100);
+            awayML = homeML > 0 ? -Math.round((homeML/100+1)*100) : Math.round(100/(-homeML/100+1)-100);
           }
-
-          const { trueHome, trueAway } = calcEdge(homeML, awayML);
-          const homeImplied = homeML < 0 ? Math.abs(homeML)/(Math.abs(homeML)+100) : 100/(homeML+100);
-          const awayImplied = awayML < 0 ? Math.abs(awayML)/(Math.abs(awayML)+100) : 100/(awayML+100);
-          const homeEdge = parseFloat(edgePct(trueHome, homeImplied));
-          const awayEdge = parseFloat(edgePct(trueAway, awayImplied));
-
+          function toProb(ml) { ml = parseInt(ml)||0; if(!ml) return 0.5; if(ml>0) return 100/(ml+100); return Math.abs(ml)/(Math.abs(ml)+100); }
+          const juice = toProb(homeML) + toProb(awayML);
+          const trueHome = toProb(homeML) / juice;
+          const trueAway = toProb(awayML) / juice;
+          const homeImplied = toProb(homeML);
+          const awayImplied = toProb(awayML);
+          const homeEdge = parseFloat(((trueHome - homeImplied)*100).toFixed(1));
+          const awayEdge = parseFloat(((trueAway - awayImplied)*100).toFixed(1));
           const book = books[Math.floor(Math.random()*books.length)];
-
-          // Game date label
           const gameDate = new Date(ev.date);
-          const now = new Date();
-          const diffDays = Math.floor((gameDate - now) / 86400000);
-          let dateLabel = diffDays <= 0 ? 'TONIGHT' : diffDays === 1 ? 'TOMORROW' : gameDate.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
-          if (status === 'in') dateLabel = 'LIVE NOW';
-
-          if (homeEdge > 5) {
-            const conf = homeEdge > 15 ? 'HIGH' : homeEdge > 8 ? 'MED' : 'LOW';
-            PICKS_DATA.push({
-              sport: sport.key, event: sport.label + ' \u2022 ' + dateLabel,
-              matchup: awayName + ' @ ' + homeName, pick: homeName + ' ML',
-              odds: mlToAmerican(homeML), book, edge: homeEdge.toFixed(1) + '%',
-              ev: (homeEdge * 0.6).toFixed(1) + '%', confidence: conf,
-              betSize: (homeEdge > 12 ? 2 : 1) + ' unit',
-              analysis: homeName + ' presents ' + homeEdge.toFixed(1) + '% model edge vs. implied book probability.',
-              isFight: false, gameId: ev.id, gameStatus: status,
-              homeTeam: homeName, awayTeam: awayName, espnSport: sport.espn,
-              gameDate: ev.date
-            });
+          const diffDays = Math.floor((gameDate - new Date()) / 86400000);
+          const dateLabel = (comp.status && comp.status.type && comp.status.type.state === 'in') ? 'LIVE NOW' : diffDays <= 0 ? 'TONIGHT' : diffDays === 1 ? 'TOMORROW' : gameDate.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+          if (homeEdge > 3) {
+            livePicks.push({ sport:sport.key, event:sport.label + ' - ' + dateLabel, matchup:awayName + ' @ ' + homeName, pick:homeName + ' ML', odds:(homeML>0?'+':'')+homeML, book:book, edge:homeEdge.toFixed(1)+'%', ev:(homeEdge*0.6).toFixed(1)+'%', confidence:homeEdge>15?'HIGH':homeEdge>8?'MED':'LOW', betSize:(homeEdge>12?'2':'1')+' unit', analysis:homeName + ' shows ' + homeEdge.toFixed(1) + '% model edge vs implied book probability.', isFight:false, gameId:ev.id, gameStatus:comp.status && comp.status.type && comp.status.type.state, homeTeam:homeName, awayTeam:awayName, espnSport:sport.espn, gameDate:ev.date });
           }
-          if (awayEdge > 5) {
-            const conf = awayEdge > 15 ? 'HIGH' : awayEdge > 8 ? 'MED' : 'LOW';
-            PICKS_DATA.push({
-              sport: sport.key, event: sport.label + ' \u2022 ' + dateLabel,
-              matchup: awayName + ' @ ' + homeName, pick: awayName + ' ML',
-              odds: mlToAmerican(awayML), book, edge: awayEdge.toFixed(1) + '%',
-              ev: (awayEdge * 0.6).toFixed(1) + '%', confidence: conf,
-              betSize: (awayEdge > 12 ? 2 : 1) + ' unit',
-              analysis: awayName + ' presents ' + awayEdge.toFixed(1) + '% model edge vs. implied book probability.',
-              isFight: false, gameId: ev.id, gameStatus: status,
-              homeTeam: homeName, awayTeam: awayName, espnSport: sport.espn,
-              gameDate: ev.date
-            });
+          if (awayEdge > 3) {
+            livePicks.push({ sport:sport.key, event:sport.label + ' - ' + dateLabel, matchup:awayName + ' @ ' + homeName, pick:awayName + ' ML', odds:(awayML>0?'+':'')+awayML, book:book, edge:awayEdge.toFixed(1)+'%', ev:(awayEdge*0.6).toFixed(1)+'%', confidence:awayEdge>15?'HIGH':awayEdge>8?'MED':'LOW', betSize:(awayEdge>12?'2':'1')+' unit', analysis:awayName + ' shows ' + awayEdge.toFixed(1) + '% model edge as road underdog.', isFight:false, gameId:ev.id, gameStatus:comp.status && comp.status.type && comp.status.type.state, homeTeam:homeName, awayTeam:awayName, espnSport:sport.espn, gameDate:ev.date });
           }
         }
-      } catch(e) {}
+      } catch(e) { /* silent fail, keep fallback */ }
     }
   }
 
-  // UFC - fetch upcoming event schedule (goes weeks out)
-  try {
-    const ufcRes = await fetch('https://site.api.espn.com/apis/site/v2/sports/mma/ufc/scoreboard?limit=50', { cache: 'no-store' });
-    const ufcData = await ufcRes.json();
-    for (const ev of (ufcData.events || [])) {
-      const eventName = ev.name || 'UFC Event';
-      const evDate = new Date(ev.date);
-      const now = new Date();
-      const diffDays = Math.floor((evDate - now) / 86400000);
-      let dateLabel = diffDays < 0 ? 'PAST' : diffDays === 0 ? 'TONIGHT' : diffDays === 1 ? 'TOMORROW' : evDate.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
-
-      for (const comp of (ev.competitions || [])) {
-        const status = comp.status?.type?.state;
-        if (status === 'post') continue;
-        const f1 = comp.competitors?.[0];
-        const f2 = comp.competitors?.[1];
-        if (!f1 || !f2) continue;
-        const name1 = f1.athlete?.displayName || f1.team?.displayName || 'Fighter 1';
-        const name2 = f2.athlete?.displayName || f2.team?.displayName || 'Fighter 2';
-
-        const o = comp.odds?.[0] || {};
-        let ml1 = o.homeTeamOdds?.moneyLine || (Math.random() > 0.5 ? -145 : 125);
-        let ml2 = o.awayTeamOdds?.moneyLine || (ml1 < 0 ? Math.round(-ml1 * 0.75) : -145);
-
-        const { trueHome, trueAway } = calcEdge(ml1, ml2);
-        const imp1 = ml1 < 0 ? Math.abs(ml1)/(Math.abs(ml1)+100) : 100/(ml1+100);
-        const imp2 = ml2 < 0 ? Math.abs(ml2)/(Math.abs(ml2)+100) : 100/(ml2+100);
-        const edge1 = parseFloat(edgePct(trueHome, imp1));
-        const edge2 = parseFloat(edgePct(trueAway, imp2));
-        const book = books[Math.floor(Math.random()*books.length)];
-
-        const bestEdge = edge1 > edge2 ? edge1 : edge2;
-        const bestFighter = edge1 > edge2 ? name1 : name2;
-        const bestML = edge1 > edge2 ? ml1 : ml2;
-
-        if (bestEdge > 3) {
-          const conf = bestEdge > 15 ? 'HIGH' : bestEdge > 8 ? 'MED' : 'LOW';
-          PICKS_DATA.push({
-            sport: 'UFC', event: eventName + ' \u2022 ' + dateLabel,
-            matchup: name1 + ' vs ' + name2, pick: bestFighter + ' ML',
-            odds: mlToAmerican(bestML), book, edge: bestEdge.toFixed(1) + '%',
-            ev: (bestEdge * 0.6).toFixed(1) + '%', confidence: conf,
-            betSize: (bestEdge > 12 ? 2 : 1) + ' unit',
-            analysis: 'UFC model finds ' + bestEdge.toFixed(1) + '% edge. Books historically misprice MMA.',
-            isFight: true,
-            fighter1: { name: name1, odds: mlToAmerican(ml1), picked: edge1 >= edge2 },
-            fighter2: { name: name2, odds: mlToAmerican(ml2), picked: edge2 > edge1 },
-            gameId: comp.id || ev.id, gameStatus: status,
-            gameDate: ev.date
-          });
-        }
-      }
-    }
-  } catch(e) {}
-
-  // Sort: LIVE first, then by date
-  PICKS_DATA.sort((a,b) => {
-    if (a.gameStatus === 'in' && b.gameStatus !== 'in') return -1;
-    if (b.gameStatus === 'in' && a.gameStatus !== 'in') return 1;
-    return new Date(a.gameDate) - new Date(b.gameDate);
-  });
-
-  if (PICKS_DATA.length === 0) {
-    const sb = ['FanDuel','DraftKings','BetMGM','Caesars','Bovada'];
-    const r = () => sb[Math.floor(Math.random()*sb.length)];
-    PICKS_DATA = [
-      { sport:'NBA', event:'NBA - TONIGHT', matchup:'Memphis Grizzlies @ OKC Thunder', pick:'OKC Thunder ML', odds:'-185', book:r(), edge:'9.4%', ev:'5.6%', confidence:'MED', betSize:'1 unit', analysis:'OKC home advantage and top-5 defense creates 9.4% model edge vs implied prob.', isFight:false, gameId:null },
-      { sport:'NBA', event:'NBA - TONIGHT', matchup:'Brooklyn Nets @ Boston Celtics', pick:'Boston Celtics ML', odds:'-310', book:r(), edge:'12.1%', ev:'7.3%', confidence:'HIGH', betSize:'2 units', analysis:'Celtics ML undervalued. Nets road net rating -12.4 this month.', isFight:false, gameId:null },
-      { sport:'NHL', event:'NHL - TONIGHT', matchup:'Buffalo Sabres @ Florida Panthers', pick:'Florida Panthers ML', odds:'-210', book:r(), edge:'8.7%', ev:'5.2%', confidence:'MED', betSize:'1 unit', analysis:'Panthers mispriced at home. Florida 11-3 last 14 home games, Sabres 2-9 on road.', isFight:false, gameId:null },
-      { sport:'NHL', event:'NHL - TONIGHT', matchup:'Vegas Golden Knights @ Washington Capitals', pick:'Vegas Golden Knights ML', odds:'+115', book:r(), edge:'14.2%', ev:'8.5%', confidence:'HIGH', betSize:'2 units', analysis:'VGK +115 road dog is pure value. Top-3 road record vs struggling Caps at home.', isFight:false, gameId:null },
-      { sport:'NCAAB', event:'NCAAB - TONIGHT', matchup:'Michigan Wolverines @ Illinois Fighting Illini', pick:'Illinois Fighting Illini ML', odds:'-145', book:r(), edge:'7.8%', ev:'4.7%', confidence:'MED', betSize:'1 unit', analysis:'Illinois -145 underpriced at home. Michigan 1-6 ATS vs top-25 on road this season.', isFight:false, gameId:null }
-    ];
-  }
+  if (livePicks.length > 0) PICKS_DATA = livePicks;
   picksLastFetched = today;
   autoResolveBets();
 }
