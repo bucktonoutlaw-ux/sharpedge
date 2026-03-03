@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1469,6 +1469,7 @@ body {
     <button class="sf-btn" onclick="filterSport('NBA', this)">🏀 NBA</button>
     <button class="sf-btn" onclick="filterSport('NHL', this)">🏒 NHL</button>
     <button class="sf-btn" onclick="filterSport('NCAAB', this)">🎓 NCAAB</button>
+    <button class="sf-btn" onclick="filterSport('UFC', this)">UFC/MMA</button>
   </div>
 
   <!-- PICKS TAB -->
@@ -1964,7 +1965,9 @@ async function fetchLivePicks() {
     { sport:'NBA', event:'NBA - TONIGHT', matchup:'Brooklyn Nets @ Boston Celtics', pick:'Boston Celtics ML', odds:'-310', book:rb(), edge:'12.1%', ev:'7.3%', confidence:'HIGH', betSize:'2 units', analysis:'Celtics ML undervalued. Nets road net rating -12.4 this month.', isFight:false, gameId:null },
     { sport:'NHL', event:'NHL - TONIGHT', matchup:'Buffalo Sabres @ Florida Panthers', pick:'Florida Panthers ML', odds:'-210', book:rb(), edge:'8.7%', ev:'5.2%', confidence:'MED', betSize:'1 unit', analysis:'Panthers mispriced at home. Florida 11-3 last 14 home games, Sabres 2-9 on road.', isFight:false, gameId:null },
     { sport:'NHL', event:'NHL - TONIGHT', matchup:'Vegas Golden Knights @ Washington Capitals', pick:'Vegas Golden Knights ML', odds:'+115', book:rb(), edge:'14.2%', ev:'8.5%', confidence:'HIGH', betSize:'2 units', analysis:'VGK +115 road dog is pure value. Top-3 road record vs struggling Caps.', isFight:false, gameId:null },
-    { sport:'NCAAB', event:'NCAAB - TONIGHT', matchup:'Michigan Wolverines @ Illinois Fighting Illini', pick:'Illinois Fighting Illini ML', odds:'-145', book:rb(), edge:'7.8%', ev:'4.7%', confidence:'MED', betSize:'1 unit', analysis:'Illinois -145 underpriced at home. Michigan 1-6 ATS vs top-25 on road.', isFight:false, gameId:null }
+    { sport:'NCAAB', event:'NCAAB - TONIGHT', matchup:'Michigan Wolverines @ Illinois Fighting Illini', pick:'Illinois Fighting Illini ML', odds:'-145', book:rb(), edge:'7.8%', ev:'4.7%', confidence:'MED', betSize:'1 unit', analysis:'Illinois -145 underpriced at home. Michigan 1-6 ATS vs top-25 on road.', isFight:false, gameId:null },
+    { sport:'UFC', event:'UFC Fight Night - SAT', matchup:'Paddy Pimblett vs Bobby Green', pick:'Paddy Pimblett ML', odds:'-175', book:rb(), edge:'11.2%', ev:'6.7%', confidence:'HIGH', betSize:'2 units', analysis:'Pimblett -175 undervalued. Books overrating Green based on name value alone.', isFight:true, fighter1:{name:'Paddy Pimblett',odds:'-175',picked:true}, fighter2:{name:'Bobby Green',odds:'+145',picked:false}, gameId:null },
+    { sport:'UFC', event:'UFC Fight Night - SAT', matchup:'Ian Garry vs Michael Page', pick:'Ian Garry ML', odds:'-155', book:rb(), edge:'8.9%', ev:'5.3%', confidence:'MED', betSize:'1 unit', analysis:'Garry -155 showing value. Page is -EV at current line given grappling exposure.', isFight:true, fighter1:{name:'Ian Garry',odds:'-155',picked:true}, fighter2:{name:'Michael Page',odds:'+130',picked:false}, gameId:null }
   ];
   PICKS_DATA = FALLBACK.slice();
 
@@ -2140,7 +2143,7 @@ function renderPicks() {
         <div class="pick-body">
           ${matchupHTML}
           <div class="pick-rec ${isUFC ? 'ufc-rec' : ''}">
-            <div class="pick-rec-text">▶ BET ${p.pick} ${p.odds} @ ${p.book}  Suggested: $${betAmt}</div>
+            <div class="pick-rec-text">▶ BET ${p.pick} ${p.odds} @ ${p.book}  Suggested: $${(state.bankroll * (p.confidence === "HIGH" ? 0.02 : 0.01)).toFixed(0)}</div>
           </div>
           <div style="padding: 0 0 0.5rem; font-family: var(--mono); font-size: 0.68rem; color: var(--text3); line-height: 1.5;">${p.analysis}</div>
         </div>
@@ -2163,7 +2166,7 @@ function renderPicks() {
             <div class="ps-label">Edge</div>
           </div>
           <div class="ps-cell">
-            <div class="ps-val">$${betAmt}</div>
+            <div class="ps-val">$${(state.bankroll*(p.confidence==="HIGH"?0.02:0.01)).toFixed(0)}</div>
             <div class="ps-label">Bet Size</div>
           </div>
           <div class="ps-cell">
