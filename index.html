@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1446,7 +1446,7 @@ body {
   <!-- BANKROLL BAR -->
   <div class="bankroll-bar" onclick="openBankrollModal()">
     <div class="br-cell">
-      <div class="br-val gold" id="br-balance">$100</div>
+      <div class="br-val gold" id="br-balance">$0</div>
       <div class="br-label">Bankroll</div>
     </div>
     <div class="br-cell">
@@ -1725,8 +1725,8 @@ const GIFT_CODES = {
 
 let state = {
   user: null,
-  bankroll: 100,
-  startBankroll: 100,
+  bankroll: 0,
+  startBankroll: 0,
   bets: [],
   activeSport: 'all'
 };
@@ -1877,6 +1877,7 @@ function enterApp() {
 
   const u = state.user;
   document.getElementById('topbar-username').textContent = u.displayName || u.username;
+  if (state.bankroll === 0) setTimeout(openBankrollModal, 900);
   document.getElementById('topbar-tier').textContent =
     u.tier === 'founding_member' ? '\u2605 FOUNDING MEMBER' : '\u2605 MEMBER';
   document.getElementById('info-username').textContent = u.username;
