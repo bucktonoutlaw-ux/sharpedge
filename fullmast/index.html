@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Full Mast Trading Co — EDC, Tactical & Survival Gear</title>
+<meta name="description" content="Full Mast Trading Co. Tactical gear, EDC essentials, knives, survival tools, supplements & more. Everything your dad should've taught you.">
+<style>
+  :root{--green:#00ff88;--dark:#070a0f;--card:#0d1117;--border:#1a2332;--text:#c8d6e5;--muted:#6e8096;--orange:#ff9900}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--dark);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif}
+  header{background:#0a0d12;border-bottom:1px solid var(--border);padding:16px 24px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100}
+  .logo{font-size:20px;font-weight:900;letter-spacing:3px;color:var(--green);text-transform:uppercase}
+  .logo span{color:#fff}
+  nav{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+  nav a{color:var(--muted);text-decoration:none;font-size:12px;letter-spacing:1px;transition:color .2s}
+  nav a:hover{color:var(--green)}
+  .cashapp-btn{background:#00d632;color:#000;padding:7px 14px;border-radius:4px;font-weight:700;font-size:11px;text-decoration:none;letter-spacing:1px}
+  .hero{padding:80px 24px 60px;text-align:center;max-width:800px;margin:0 auto}
+  .hero-tag{font-size:11px;color:var(--green);letter-spacing:3px;text-transform:uppercase;margin-bottom:14px}
+  .hero h1{font-size:clamp(30px,6vw,54px);font-weight:900;line-height:1.1;margin-bottom:18px}
+  .hero h1 em{color:var(--green);font-style:normal}
+  .hero p{color:var(--muted);font-size:16px;line-height:1.7;margin-bottom:28px}
+  .hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .btn-primary{background:var(--green);color:#000;padding:13px 26px;border-radius:4px;font-weight:800;font-size:13px;text-decoration:none;letter-spacing:1px}
+  .btn-secondary{background:transparent;color:var(--text);padding:13px 26px;border-radius:4px;font-weight:600;font-size:13px;text-decoration:none;border:1px solid var(--border)}
+  .cat-nav{max-width:1100px;margin:0 auto;padding:0 24px 40px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+  .cat-pill{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:8px 18px;font-size:12px;color:var(--muted);text-decoration:none;letter-spacing:1px;transition:all .2s}
+  .cat-pill:hover{border-color:var(--green);color:var(--green)}
+  .cat-section{max-width:1100px;margin:0 auto;padding:40px 24px}
+  .section-label{font-size:10px;color:var(--green);letter-spacing:3px;text-transform:uppercase;margin-bottom:6px}
+  .section-title{font-size:24px;font-weight:800;margin-bottom:8px}
+  .section-desc{color:var(--muted);font-size:14px;margin-bottom:28px}
+  .product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+  .product-card{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:border-color .2s,transform .2s;display:flex;flex-direction:column}
+  .product-card:hover{border-color:var(--green);transform:translateY(-2px)}
+  .product-img{width:100%;height:200px;object-fit:contain;background:#111820;padding:12px}
+  .product-badge{background:#00ff8820;color:var(--green);font-size:10px;letter-spacing:2px;padding:4px 10px;display:inline-block;font-weight:700}
+  .product-body{padding:18px;flex:1;display:flex;flex-direction:column}
+  .product-cat{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+  .product-name{font-size:16px;font-weight:800;margin-bottom:7px;line-height:1.3}
+  .product-hook{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:14px;flex:1}
+  .product-price{font-size:20px;font-weight:900;color:var(--green);margin-bottom:14px}
+  .product-price span{font-size:12px;color:var(--muted);font-weight:400}
+  .amazon-btn{display:block;background:var(--orange);color:#000;text-align:center;padding:11px;border-radius:4px;font-weight:800;font-size:12px;text-decoration:none;letter-spacing:1px}
+  .amazon-btn:hover{opacity:.85}
+  .disclosure{background:var(--card);border:1px solid var(--border);border-radius:4px;padding:12px 16px;font-size:11px;color:var(--muted);max-width:1100px;margin:0 auto 20px;padding-left:28px}
+  footer{background:#0a0d12;border-top:1px solid var(--border);padding:32px 24px;text-align:center;color:var(--muted);font-size:12px;margin-top:60px}
+  footer a{color:var(--muted);text-decoration:none;margin:0 8px}
+  footer a:hover{color:var(--green)}
+  .footer-logo{font-size:16px;font-weight:900;color:var(--green);letter-spacing:3px;margin-bottom:10px}
+  .divider{max-width:1100px;margin:0 auto;border:none;border-top:1px solid var(--border)}
+  @media(max-width:600px){header{flex-direction:column;gap:10px}nav{justify-content:center}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">FULL MAST <span>TRADING CO</span></div>
+  <nav>
+    <a href="#smart-home">Smart Home</a>
+    <a href="#kitchen">Kitchen</a>
+    <a href="#outdoor">Outdoor</a>
+    <a href="#fitness">Fitness</a>
+    <a href="#tools">Tools</a>
+    <a href="#auto">Auto</a>
+    <a href="https://cash.app/Marcuzz315" target="_blank" class="cashapp-btn">💸 Support</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <div class="hero-tag">⚓ Full Mast Trading Co</div>
+  <h1>Gear For Men Who<br><em>Don't Make Excuses</em></h1>
+  <p>EDC essentials, survival tools, smart home tech, fitness gear, and more. Everything your dad should've given you — but you figured it out anyway.</p>
+  <div class="hero-btns">
+    <a href="#smart-home" class="btn-primary">↓ Shop The Gear</a>
+    <a href="https://cash.app/Marcuzz315" target="_blank" class="btn-secondary">💸 Support Directly</a>
+  </div>
+</div>
+
+<div class="cat-nav">
+  <a href="#smart-home" class="cat-pill">📡 Smart Home & Tech</a>
+  <a href="#kitchen" class="cat-pill">🍳 Kitchen</a>
+  <a href="#outdoor" class="cat-pill">🏕️ Outdoor & Camping</a>
+  <a href="#fitness" class="cat-pill">💪 Health & Fitness</a>
+  <a href="#tools" class="cat-pill">🔧 Tools & Home</a>
+  <a href="#auto" class="cat-pill">🚗 Car & Auto</a>
+</div>
+
+<div class="disclosure">
+  <strong>Affiliate Disclosure:</strong> Full Mast Trading Co participates in the Amazon Associates program. Links are affiliate links — we earn a small commission at no extra cost to you. We only list gear we'd actually use.
+</div>
+
+<section class="cat-section" id="smart-home">
+  <div class="section-label">◎ Category 01</div>
+  <div class="section-title">Smart Home & Tech</div>
+  <div class="section-desc">Automate your space. Work smarter, not harder.</div>
+  <div class="product-grid">
+    <div class="product-card">
+      <img class="product-img" src="https://m.media-amazon.com/images/I/71JB6hM6Z6L._AC_SX466_.jpg" alt="Echo Dot 5th Gen" loading="lazy">
+      <div class="product-badge">⭐ BEST SELLER</div>
+      <div class="product-body">
+        <div class="product-cat">Smart Speaker · Alexa</div>
+        <div class="product-name">Echo Dot (5th Gen)</div>
+        <div class="product-hook">The entry point into smart home that actually works. Alarm, timers, music, smart controls — all voice. No fumbling for a phone at 5am.</div>
+        <div class="product-price">~$50 <span>on Amazon</span></div>
+        <a href="https://www.amazon.com/dp/B09B8V1LZ3/?tag=mshatraw90-20" target="_blank" class="amazon-btn">🛒 Buy on Amazon</a>
+      </div>
+    </div>
+    <div class="product-card">
+      <img class="product-img" src="https://m.media-amazon.com/images/I/61LYGgCLRQL._AC_SX466_.jpg" alt="TP-Link Kasa Smart Plug" loading="lazy">
+      <div class="product-badge">🔥 MOST POPULAR</div>
+      <div class="product-body">
+        <div class="product-cat">Smart Plug · Automation</div>
+        <div class="product-name">TP-Link Kasa Smart Plug (4-pack)</div>
+        <div class="product-hook">Turn any outlet into a smart outlet. Schedule your coffee maker. Kill standby power. Works with Alexa and Google. No hub required.</div>
+        <div class="product-price">~$30 <span>on Amazon</span></div>
+        <a href="https://www.amazon.com/dp/B07THHQMHM/?tag=mshatraw90-20" target="_blank" class="amazon-btn">🛒 Buy on Amazon</a>
+      </div>
+    </div>
+    <div class="product-card">
+      <img class="product-img" src="https://m.media-amazon.com/images/I/61DaNOHyocL._AC_SX466_.jpg" alt="Blink Mini Camera" loading="lazy">
+      <div class="product-body">
+        <div class="product-cat">Security · Camera</div>
+        <div class="product-name">Blink Mini Indoor Camera</div>
+        <div class="product-hook">1080p, motion alerts, 2-way audio. $35 and it streams to your phone anywhere. No monthly fee required. The cheapest real security upgrade you can make.</div>
+        <div class="product-price">~$35 <span>on Amazon</span></div>
+        <a href="https://www.amazon.com/dp/B07X27LF92/?tag=mshatraw90-20" target="_blank" class="amazon-btn">🛒 Buy on Amazon</a>
+      </div>
+    </div>
+    <div class="product-card">
+      <img class="product-img" src="https://m.media-amazon.com/images/I/61-+GazJGnL._AC_SX466_.jpg" alt="Govee LED Strip Lights" loading="lazy">
+      <div class="product-body">
+        <div class="product-cat">Smart Lighting · Ambiance</div>
+        <div class="product-name">Govee 65ft LED Strip Lights</div>
+        <div class="product-hook">App-controlled, 16 million colors, music sync mode. The fastest and cheapest way to make your space look intentional instead of like a dorm room.</div>
+        <div class="product-price">~$25 <span>on Amazon</span></div>
+        <a href="https://www.amazon.com/dp/B08JQ64YRC/?tag=mshatraw90-20" target="_blank" class="amazon-btn">🛒 Buy on Amazon</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section class="cat-section" id="kitchen">
+  <div class="section-label">◎ Category 02</div>
+  <div class="section-title">Kitchen Essentials</div>
+  <div class="section-desc">Cook like you mean it. Stop eating garbage.</div>
+  <div class="product-grid">
+    <div class="product-card">
+      <img class="product-img" src="https://m.media-amazon.com/images/I/714XGvIlCTL._AC_SX466_.jpg" alt="Instant Pot Duo 7-in-1" loading="lazy">
+      <div class="product-badge">⭐ TOP PICK</div>
+      <div class="product-body">
+        <div class="product-cat">Pressure Cooker · Instant Pot</div>
+        <div class="product-name">Instant Pot Duo 7-in-1 (6qt)</div>
+        <div class="product-hook">Pressure cook, slow cook, rice, steam, sauté, warm, and yogurt. Meal preps for 5 days in under an hour. One pot. No excuses for eating out.</div>
+        <div class="product-price">~$80 <span>on Amazon</span></div>
+        <a href="https://www.amazon.com/dp/B00FLYWNYQ/?tag=mshatraw90-20" target="_blank" class="amazon-btn">🛒 Buy on Amazon</a>
+      </div>
+    </div>
+    <div class="product-card">
+      <img class="product-img" src="https://m.media-amazon.com/images/I/71GJYcaRGFL._AC_SX466_.jpg" alt="Lodge Cast Iron Skillet" loading="lazy">
+      <div class="product-body">
+        <div class="product-cat">Cookware · Cast Iron</div>
+        <div class="product-name">Lodge 12" Cast Iron Skillet</div>
+        <div class="product-hook">Pre-seasoned. Indestructible. Made in the USA since 1896. Sear steaks at restaurant quality. Your grandkids will still be using this skillet.</div>
+        <div class="product-price">~$35 <span>on Amazon</span></div>
+        <a href="https://www.amazon.com/dp/B00006JSUA/?tag=mshatraw90-20" target="_blank" class="amazon-btn">🛒 Buy on Amazon</a>
+      </div>
+    </div>
+    <div class="product-card">
+      <img class="product-img" src="https://m.media-amazon.com/images/I/81MxYHV3TmL._AC_SX466_.jpg" alt="Cuisinart Coffee Maker" loading="lazy">
+      <div class="product-body">
+        <div class="product-cat">Coffee · Brew</div>
+        <div class="product-name">Cuisinart 14-Cup Coffee Maker</div>
+        <div class="product-hook">Programmable, brew strength control. Stop spending $6 a day at Starbucks. This pays for itself in a week.</div>
+        <div class="product-price">~$60 <span>on Amazon</span></div>
+        <a href="https://www.amazon.com/dp/B00HIHAH5W/?tag=mshatraw90-20" target="_blank" class="amazon-btn">🛒 Buy on Amazon</a>
+      </div>
+    </div>
+    <div class="product-card">
+      <img class="product-img" src="https://m.media-amazon.com/images/I/71WtwEvYDOS._AC_SX466_.jpg" alt="COSORI Air Fryer" loading="lazy">
+      <div class="product-badge">🔥 HOT</div>
+      <div class="product-body">
+        <div class="product-cat">Air Fryer · Countertop</div>
+        <div class="product-name">COSORI 5.8qt Air Fryer</div>
+        <div class="product-hook">11 presets, 1750W, dishwasher-safe basket. Chicken thighs in 20 minutes. Fries with no oil guilt.</div>
+        <div class="product-price">~$70 <span>on Amazon</span></div>
+        <a href="https://www.amazon.com/dp/B08PL2QD3J/?tag=mshatraw90-20" target="_blank" class="amazon-btn">🛒 Buy on Amazon</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section class="cat-section" id="outdoor">
+  <div class="section-label">◎ Category 03</div>
+  <div class="section-title">Outdoor & Camping</div>
+  <div class="section-desc">Pack smart. Stay ready. Never depend on anyone.</div>
+  <div class="product-grid">
+    <div class="product-card">
+      <img class="product-img" src="https://m.media-amazon.com/images/I/71Cqp-QGZBL._AC_SX466_.jpg" alt="Leatherman Wave+" loading="lazy">
+      <div class="product-badge">⭐ CARRY ALWAYS</div>
+      <div class="product-body">
+        <div class="product-cat">Multitool · EDC</div>
+        <div class="product-name">Leatherman Wave+</div>
+        <div class="product-hook">18 tools. All lockable. Made in the USA. 25-year warranty. The last multitool you'll ever need to buy.</div>
+        <div class="product-price">~$110 <span>on Amazon</span></div>
+        <a href="https://www.amazon.com/dp/B07QS9VWBF/?tag=mshatraw90-20" target="_blank" class="amazon-btn">🛒 Buy on Amazon</a>
+      </div>
+    </div>
+    <div class="product-card">
+      <img class="product-img" src="https://m.media-amazon.com/images/I/51i4MNDfqQL._AC_SX466_.jpg" alt="LifeStraw Personal Water Filter" loading="lazy">
+      <div class="product-body">
+        <div class="product-cat">Survival · Water</div>
+        <div class="product-name">LifeStraw Personal Water Filter</div>
+        <div class="product-hook">Filters 99.9999% of bacteria. Weighs 2oz. Fits in any pocket. $17 insurance against the worst day of your life. One per bag. No exceptions.</div>
+        <div class="product-price">~$17 <span>on Amazon</span></div>
+        <a href="https://www.amazon.com/dp/B006QF3TW4/?tag=mshatraw90-20" target="_blank" class="amazon-btn">🛒 Buy on Amazon</a>
+      </div>
+    </div>
+    <div class="product-card">
+      <img class="product-img" src="https://m.media-amazon.com/images/I/61RM3bBxjVL._AC_SX466_.jpg" alt="TETON Sports Scout 3400" loading="lazy">
+      <div class="product-body">
+        <div class="product-cat">Pack · Hiking</div>
+        <div class="product-name">TETON Sports Scout 3400 Backpack</div>
+        <div class="product-hook">55L, internal frame, sleeping bag compartment. Does everything a $300 pack does at a third of the price.</div>
+        <div class="product-price">~$70 <span>on Amazon</span></div>
+        <a href="https://www.amazon.com/dp/B001G6HB44/?tag=mshatraw90-20" target="_blank" class="amazon-btn">🛒 Buy on Amazon</a>
+      </div>
+    </div>
+    <div class="product-card">
+      <img class="product-img" src="https://m.media-amazon.com/images/I/71J0w62BBIL._AC_SX466_.jpg" alt="BioLite CampStove 2+" loading="lazy">
+      <div class="product-badge">🔥 UNIQUE</div>
+      <div class="product-body">
+        <div class="product-cat">Camp Stove · Off-Grid Power</div>
+        <div class="product-name">BioLite CampStove 2+</div>
+        <div class="product-hook">Burns twigs and sticks. Generates electricity to charge your phone. Zero fuel to carry. The camp stove that also charges your devices off-grid.</div>
+        <div class="product-price">~$150 <span>on Amazon</span></div>
+        <a href="https://www.amazon.com/dp/B07BGSYY3X/?tag=mshatraw90-20" target="_blank" class="amazon-btn">🛒 Buy on Amazon</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section class="cat-section" id="fitness">
+  <div class="section-label">◎ Category 04</div>
+  <div class="section-title">Health & Fitness</div>
+  <div class="section-desc">Build the body. Fuel it right. No shortcuts that don't work.</div>
+  <div class="product-grid">
+    <div class="product-card">
+      <img class="product-img" src="https://m.media-amazon.com/images/I/61aWf5PSDYL._AC_SX466_.jpg" alt="Bowflex SelectTech 552" loading="lazy">
+      <div class="product-badge">⭐ HOME GYM</div>
+      <div class="product-body">
+        <div class="product-cat">Weights · Adjustable</div>
+        <div class="product-name">Bowflex SelectTech 552 Dumbbells</div>
+        <div class="product-hook">5–52.5lbs. Dial-select. Replaces 15 sets of dumbbells. No more garage full of iron. The home gym piece that actually gets used.</div>
+        <div class="product-price">~$300 <span>on Amazon</span></div>
+        <a href="https://www.amazon.com/dp/B001ARYU58/?tag=mshatraw90-20" target="_blank" class="amazon-btn">🛒 Buy on Amazon</a>
+      </div>
+    </div>
+    <div class="product-card">
+      <img class="product-img" src="https://m.media-amazon.com/images/I/71o8Q5XJS5L._AC_SX466_.jpg" alt="ON Gold Standard Whey" loading="lazy">
+      <div class="product-body">
+        <div class="product-cat">Protein · Supplement</div>
+        <div class="product-name">ON Gold Standard 100% Whey (5lb)</div>
+        <div class="product-hook">24g protein per serving. The standard every other whey is compared against. Mixes clean. Double rich chocolate for a reason.</div>
+        <div class="product-price">~$55 <span>on Amazon</span></div>
+        <a href="https://www.amazon.com/dp/B000QSNYGI/?tag=mshatraw90-20" target="_blank" class="amazon-btn">🛒 Buy on Amazon</a>
+      </div>
+    </div>
+    <div class="product-card">
+      <img class="product-img" src="https://m.media-amazon.com/images/I/51QYbUkQ9vL._AC_SX466_.jpg" alt="Iron Gym Pull Up Bar" loading="lazy">
+      <div class="product-body">
+        <div class="product-cat">Bodyweight · Bar</div>
+        <div class="product-name">Iron Gym Pull Up Bar</div>
+        <div class="product-hook">No screws. Fits any doorframe. The $30 tool that builds the back and arms you've been procrastinating on.</div>
+        <div class="product-price">~$30 <span>on Amazon</span></div>
+        <a href="https://www.amazon.com/dp/B001EJMS6K/?tag=mshatraw90-20" target="_blank" class="amazon-btn">🛒 Buy on Amazon</a>
+      </div>
+    </div>
+    <div class="product-card">
+      <img class="product-img" src="https://m.media-amazon.com/images/I/71R+EKrqsoL._AC_SX466_.jpg" alt="WOD Nation Speed Jump Rope" loading="lazy">
+      <div class="product-body">
+        <div class="product-cat">Cardio · Speed</div>
+        <div class="product-name">WOD Nation Speed Jump Rope</div>
+        <div class="product-hook">Adjustable cable. Bearing system. The cardio tool that fits in a pocket and destroys you faster than any machine. 10 minutes is brutal.</div>
+        <div class="product-price">~$18 <span>on Amazon</span></div>
+        <a href="https://www.amazon.com/dp/B00QY2SWHO/?tag=mshatraw90-20" target="_blank" class="amazon-btn">🛒 Buy on Amazon</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section class="cat-section" id="tools">
+  <div class="section-label">◎ Category 05</div>
+  <div class="section-title">Tools & Home Improvement</div>
+  <div class="section-desc">Fix your own shit. Call nobody.</div>
+  <div class="product-grid">
+    <div class="product-card">
+      <img class="product-img" src="https://m.media-amazon.com/images/I/71fgGVYFpoL._AC_SX466_.jpg" alt="DEWALT 20V Drill" loading="lazy">
+      <div class="product-badge">⭐ ESSENTIAL</div>
+      <div class="product-body">
+        <div class="product-cat">Power Tool · Drill</div>
+        <div class="product-name">DEWALT 20V MAX Drill/Driver Kit</div>
+        <div class="product-hook">Compact, brushless, 2-battery kit. The one tool every man should own before he owns any other power tool.</div>
+        <div class="product-price">~$149 <span>on Amazon</span></div>
+        <a href="https://www.amazon.com/dp/B076JKG4NG/?tag=mshatraw90-20" target="_blank" class="amazon-btn">🛒 Buy on Amazon</a>
+      </div>
+    </div>
+    <div class="product-card">
+      <img class="product-img" src="https://m.media-amazon.com/images/I/61nq9ROBLFL._AC_SX466_.jpg" alt="Klein Tools Voltage Tester" loading="lazy">
+      <div class="product-body">
+        <div class="product-cat">Electrical · Safety</div>
+        <div class="product-name">Klein Tools Non-Contact Voltage Tester</div>
+        <div class="product-hook">$18 tool that tells you if a wire is live before you grab it. No voltage tester = trusting luck on electrical work. That's not a strategy.</div>
+        <div class="product-price">~$18 <span>on Amazon</span></div>
+        <a href="https://www.amazon.com/dp/B003DGN2XS/?tag=mshatraw90-20" target="_blank" class="amazon-btn">🛒 Buy on Amazon</a>
+      </div>
+    </div>
+    <div class="product-card">
+      <img class="product-img" src="https://m.media-amazon.com/images/I/71MWBM6BGNL._AC_SX466_.jpg" alt="WORKPRO 408-Piece Tool Set" loading="lazy">
+      <div class="product-body">
+        <div class="product-cat">Tools · Complete Kit</div>
+        <div class="product-name">WORKPRO 408-Piece Home Tool Kit</div>
+        <div class="product-hook">Sockets, wrenches, screwdrivers, pliers, hammer, level — all in one case. Stop borrowing tools from your neighbor.</div>
+        <div class="product-price">~$60 <span>on Amazon</span></div>
+        <a href="https://www.amazon.com/dp/B07NW7Q59Q/?tag=mshatraw90-20" target="_blank" class="amazon-btn">🛒 Buy on Amazon</a>
+      </div>
+    </div>
+    <div class="product-card">
+      <img class="product-img" src="https://m.media-amazon.com/images/I/81HkVMeZMCL._AC_SX466_.jpg" alt="CRAFTSMAN Tape Measure 3-pack" loading="lazy">
+      <div class="product-body">
+        <div class="product-cat">Measuring · Precision</div>
+        <div class="product-name">CRAFTSMAN 25ft Tape Measure (3-pack)</div>
+        <div class="product-hook">Three-pack because you'll leave one in the truck, one in the toolbox, lose the third. Buy the 3-pack and stop hunting for it every project.</div>
+        <div class="product-price">~$25 <span>on Amazon</span></div>
+        <a href="https://www.amazon.com/dp/B07PX9LZPF/?tag=mshatraw90-20" target="_blank" class="amazon-btn">🛒 Buy on Amazon</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section class="cat-section" id="auto">
+  <div class="section-label">◎ Category 06</div>
+  <div class="section-title">Car & Automotive</div>
+  <div class="section-desc">Your vehicle is your responsibility. Be prepared.</div>
+  <div class="product-grid">
+    <div class="product-card">
+      <img class="product-img" src="https://m.media-amazon.com/images/I/61Ry4bGT9XL._AC_SX466_.jpg" alt="NOCO Boost Plus GB40" loading="lazy">
+      <div class="product-badge">⭐ MUST OWN</div>
+      <div class="product-body">
+        <div class="product-cat">Jump Starter · Emergency</div>
+        <div class="product-name">NOCO Boost Plus GB40 Jump Starter</div>
+        <div class="product-hook">1000A peak. No other car needed. Fits in a glove box. The moment your battery dies at 2am will justify every dollar.</div>
+        <div class="product-price">~$100 <span>on Amazon</span></div>
+        <a href="https://www.amazon.com/dp/B015TKUPIC/?tag=mshatraw90-20" target="_blank" class="amazon-btn">🛒 Buy on Amazon</a>
+      </div>
+    </div>
+    <div class="product-card">
+      <img class="product-img" src="https://m.media-amazon.com/images/I/71CQJN15UeL._AC_SX466_.jpg" alt="BLUEDRIVER OBD2 Scanner" loading="lazy">
+      <div class="product-body">
+        <div class="product-cat">Diagnostics · OBD2</div>
+        <div class="product-name">BLUEDRIVER Bluetooth OBD2 Scanner</div>
+        <div class="product-hook">Read and clear check engine lights with your phone in plain English. Stop paying $100 at AutoZone just to know what's wrong.</div>
+        <div class="product-price">~$100 <span>on Amazon</span></div>
+        <a href="https://www.amazon.com/dp/B00652G4TS/?tag=mshatraw90-20" target="_blank" class="amazon-btn">🛒 Buy on Amazon</a>
+      </div>
+    </div>
+    <div class="product-card">
+      <img class="product-img" src="https://m.media-amazon.com/images/I/51IQPX+NNBL._AC_SX466_.jpg" alt="AstroAI Tire Inflator" loading="lazy">
+      <div class="product-body">
+        <div class="product-cat">Tire · Inflator</div>
+        <div class="product-name">AstroAI Digital Tire Inflator</div>
+        <div class="product-hook">Plugs into 12V. Digital display. Auto-shutoff at target PSI. Never borrow a pump from a gas station at midnight again.</div>
+        <div class="product-price">~$30 <span>on Amazon</span></div>
+        <a href="https://www.amazon.com/dp/B01N3BNPOM/?tag=mshatraw90-20" target="_blank" class="amazon-btn">🛒 Buy on Amazon</a>
+      </div>
+    </div>
+    <div class="product-card">
+      <img class="product-img" src="https://m.media-amazon.com/images/I/71b0xNFQmIL._AC_SX466_.jpg" alt="Vantrue N2S Dual 4K Dash Cam" loading="lazy">
+      <div class="product-badge">✅ PROTECTION</div>
+      <div class="product-body">
+        <div class="product-cat">Dash Cam · Evidence</div>
+        <div class="product-name">Vantrue N2S Dual 4K Dash Cam</div>
+        <div class="product-hook">4K front + 4K rear. Night vision. GPS. One incident where someone lies about the accident and this thing pays for itself ten times over.</div>
+        <div class="product-price">~$180 <span>on Amazon</span></div>
+        <a href="https://www.amazon.com/dp/B09B99TL3H/?tag=mshatraw90-20" target="_blank" class="amazon-btn">🛒 Buy on Amazon</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">FULL MAST TRADING CO</div>
+  <p style="margin-bottom:12px">
+    <a href="#smart-home">Smart Home</a>
+    <a href="#kitchen">Kitchen</a>
+    <a href="#outdoor">Outdoor</a>
+    <a href="#fitness">Fitness</a>
+    <a href="#tools">Tools</a>
+    <a href="#auto">Auto</a>
+    <a href="https://cash.app/Marcuzz315" target="_blank">Cash App</a>
+  </p>
+  <p style="color:#334;font-size:11px;max-width:700px;margin:0 auto 6px">Full Mast Trading Co is a participant in the Amazon Services LLC Associates Program, an affiliate advertising program designed to provide a means for sites to earn advertising fees by advertising and linking to amazon.com. Amazon and the Amazon logo are trademarks of Amazon.com, Inc. or its affiliates.</p>
+  <p style="color:#223;font-size:10px;margin-top:6px">© 2026 Full Mast Trading Co · mshatraw90-20 · Built by Marcuzz Empire</p>
+</footer>
+
+</body>
+</html>
